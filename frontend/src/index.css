@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Space+Grotesk:wght@300..700&display=swap'); 
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Base Light Theme */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.15 0 0);
+
+  --primary: #BC8A5F; /* Soft amber */
+  --primary-foreground: oklch(0.985 0 0);
+
+  --secondary: #A47148; /* Rich brown-gold */
+  --secondary-foreground: oklch(0.985 0 0);
+
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.92 0 0);
+  --ring: oklch(0.70 0 0);
+}
+
+.dark {
+  /* Base Dark Theme */
+  --background: oklch(0.19 0.014 310);
+  --foreground: oklch(0.93 0.015 310);
+
+  --primary: #BC8A5F; /* Keep same brand color */
+  --primary-foreground: oklch(0.18 0.01 310);
+
+  --secondary: #A47148;
+  --secondary-foreground: oklch(0.95 0.015 310);
+
+  --border: oklch(0.28 0.01 315 / 20%);
+  --input: oklch(0.25 0.01 315 / 20%);
+  --ring: oklch(0.72 0.14 250);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.prose > * + * {
+  margin-top: 0.4rem !important;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-inter {
+    font-family: 'Inter', sans-serif;
+  }
+  .font-manrope {
+    font-family: 'Manrope', sans-serif;
+  }
+  .font-space {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
