@@ -21,6 +21,7 @@ import AdminChat from "./pages/AdminChat";
 import Catalog from "./pages/Catalog";
 import StyleDetails from "./components/StyleDetails";
 import EditStyleDetails from "./pages/EditStyleDetails";
+import Payments from "./pages/Payment";
 
 function App() {
   const [authenticated, setAuthenticated] = useState(null); // null = checking
@@ -114,6 +115,8 @@ function App() {
 
             <Route path="/designers" element={<Designers />} />
             <Route path="/designers/:id" element={<DesignerDetails />} />
+
+            <Route path="/payments" element={<Payments />} />
           </Routes>
         </>
     </div>

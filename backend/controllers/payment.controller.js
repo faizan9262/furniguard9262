@@ -38,13 +38,15 @@ export const paymentVerification = async (req, res) => {
     } = req.body;
 
     const body = `${razorpay_order_id}|${razorpay_payment_id}`;
+
+
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_API_SECRET)
       .update(body)
       .digest("hex");
 
     const isAuthentic = expectedSignature === razorpay_signature;
-
+    
     if (!isAuthentic) {
       return res
         .status(400)
@@ -72,3 +74,38 @@ export const paymentVerification = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getAllPaymentList = async (req, res) => {
+  try {
+    const list = await Payment.find()
+      .populate({
+        path: "appointment",
+        populate: [
+          {
+            path: "user",
+            model: "UserModel",
+            select: "username email profilePicture", // only needed fields
+          },
+          {
+            path: "designer",
+            select: "user type", // limit designer fields if needed
+            populate: {
+              path: "user",
+              model: "UserModel",
+              select: "username email profilePicture",
+            },
+          },
+          {
+            path: "products", // full product docs
+            // you can also do select: "name price" if you only want some fields
+          },
+        ],
+      })
+      .sort({ createdAt: -1 });
+      
+    res.status(200).json(list);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

@@ -128,3 +128,14 @@ export const fetchMessages = async (from, receiverId) => {
   const data = await response.data;
   return data;
 };
+
+export const allPayments = async ()=>{
+  const response = await axios.get('/payment/all-payments')
+
+  if(response.status !== 200){
+    throw new Error("Unable to load payments")
+  }
+
+  const data = await response.data
+  return data
+}

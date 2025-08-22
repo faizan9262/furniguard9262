@@ -163,6 +163,21 @@ const Navbar = () => {
           </Button>
           
           <Button
+            onClick={() => navigate("/payments")}
+            className={`flex-1 text-sm py-6 font-semibold hover:bg-white ${
+              isActive("/payments")
+                ? "bg-secondary border-2 border-white"
+                : "text-white"
+            }`}
+            variant="ghost"
+          >
+            <div className="flex flex-col items-center justify-center">
+              <InfoIcon />
+              <span> Payments </span>
+            </div>
+          </Button>
+
+          <Button
             onClick={() => navigate("/about")}
             className={`flex-1 text-sm py-6 font-semibold hover:bg-white ${
               isActive("/about")
