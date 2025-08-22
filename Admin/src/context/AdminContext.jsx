@@ -21,19 +21,25 @@ export const AdminContexProvider = (props) => {
   const adminLogin = async (email, password) => {
     try {
       const response = await axios.post(
-        backendUrl + "/api/user/login",
+        "/user/admin/login",
         { email, password },
         { withCredentials: true }
       );
-      setAdmin({
-        email: data.email,
-        name: data.name,
-        role: data.role,
-        profilePicture: data.profilePic,
-      });
-      return response.data;
+
+      if (response.status === 200) {
+        const data = response.data;
+        setAdmin({
+          email: data.email,
+          name: data.name,
+          role: data.role,
+          profilePicture: data.profilePic,
+        });
+        return response; // return only on success
+      }
     } catch (error) {
-      console.log(error);
+      // Rethrow error for component to handle
+      if (error.response) throw error.response;
+      throw error;
     }
   };
 
@@ -71,8 +77,8 @@ export const AdminContexProvider = (props) => {
         const data = await getAllDesigners();
         console.log("Data:", data);
         setDesigners(data);
-        if(data){
-          return
+        if (data) {
+          return;
         }
       } catch (error) {
         console.log(error);

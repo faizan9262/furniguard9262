@@ -50,14 +50,15 @@ app.options("*", cors(corsOptions));
 await mongoDBConnect();
 conntectCloadinary();
 app.use(express.json());
-app.use(cookieParser(process.env.JWT_SECRET));
+app.use(cookieParser());
 app.use(helmet());
+
 
 app.get("/", (req, res) => {
   res.send("Welcome to Furniguard APIs");
 });
 initSocket(httpServer)
-app.use("/api/user",authLimiter, userRouter);
+app.use("/api/user", userRouter);
 app.use("/api/products", productRouter);
 app.use("/api/designers", designerRouter);
 app.use("/api/appointment", appointmentRouter);

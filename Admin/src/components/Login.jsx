@@ -29,24 +29,24 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const navigate = useNavigate();
-  const adminContext = useAdmin()
+  const adminContext = useAdmin();
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-      toast.loading("Siging in you, Admin", { id: "admin-login" });
-      const response = await adminContext.adminLogin(email,password)
-      // console.log("Response in login: ",response);
-      navigate("/");
+      toast.loading("Signing you in, Admin...", { id: "admin-login" });
+      const response = await adminContext.adminLogin(email, password);
+
       toast.success("Login successful", { id: "admin-login" });
-    } catch (error) {
-      console.log(error);
-      toast.error(error, { toastId: "admin-login" });
+      console.log("Admin login success:", response.data);
+      navigate("/");
+    } catch (err) {
+      console.error("Admin login failed:", err);
+      const message = err?.data?.message || "Login failed";
+      toast.error(message, { id: "admin-login" });
     }
   };
 
-
-  
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-primary to-secondary text-white">
       {/* Left Icon Info Panel */}

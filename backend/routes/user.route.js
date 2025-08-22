@@ -1,8 +1,8 @@
 import express from "express";
 import {
   changeProfilePic,
-  loginUser,
-  logoutUser,
+  login,
+  logout,
   registerUser,
   resetPassword,
   sendPassswordResetOtp,
@@ -18,10 +18,10 @@ import adminAuth from "../middleware/adminAuth.js";
 const userRouter = express.Router();
 
 userRouter.post("/register", registerUser);
-userRouter.post("/login", loginUser);
-userRouter.post("/logout", verifyToken, logoutUser);
-// userRouter.post("/admin/login", admiLogin);
-// userRouter.get("/admin/logout", adminLogout);
+userRouter.post("/login", login);
+userRouter.post("/logout", verifyToken, logout);
+userRouter.post("/admin/login" ,login);
+userRouter.post("/admin/logout",adminAuth, logout);
 userRouter.get("/admin/check-auth", adminAuth, (req, res) => {
   res.json({
     success: true,

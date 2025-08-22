@@ -11,17 +11,29 @@ import { sendMail } from "../utils/sendmail.js";
 import { generateOtp } from "../utils/generateOtp.js";
 import { Designer } from "../models/designer.model.js";
 import { UserModel } from "../models/user.model.js";
+
 dotenv.config();
 
-const USER_COOKIE_NAME = "auth-cookie";
-const ADMIN_COOKIE_NAME = "admin-cookie";
-const COOKIE_OPTIONS = {
+export const COOKIE_OPTIONS = {
   path: "/",
-  domain: "localhost",
   httpOnly: true,
-  signed: true,
-  expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 };
+
+export const ADMIN_COOKIE_NAME = "admin_cookie";
+export const USER_COOKIE_NAME = "auth_cookie";
+
+export const setAuthCookie = (res, name, token) => {
+  res.clearCookie(name, COOKIE_OPTIONS);
+  res.cookie(name, token, COOKIE_OPTIONS);
+};
+
+export const clearAuthCookie = (res, name) => {
+  res.clearCookie(name, { ...COOKIE_OPTIONS });
+};
+
 
 export const registerUser = async (req, res) => {
   try {
@@ -38,7 +50,7 @@ export const registerUser = async (req, res) => {
     if (password.length < 6) {
       return res
         .status(400)
-        .json({ message: "Password length should be more than 6 characters" });
+        .json({ message: "Password must be at least 6 characters long" });
     }
 
     const uppercaseRegex = /[A-Z]/;
@@ -50,13 +62,11 @@ export const registerUser = async (req, res) => {
         message: "Password must contain at least one uppercase letter",
       });
     }
-
     if (!numberRegex.test(password)) {
       return res
         .status(400)
         .json({ message: "Password must contain at least one number" });
     }
-
     if (!symbolRegex.test(password)) {
       return res.status(400).json({
         message:
@@ -82,32 +92,28 @@ export const registerUser = async (req, res) => {
 
     const token = createToken(user._id.toString(), email, "7d");
 
-    res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
-    res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
+    res.clearCookie(USER_COOKIE_NAME, COOKIE_OPTIONS);
+    res.cookie(USER_COOKIE_NAME, token, COOKIE_OPTIONS);
 
-    const mailSubject = "Thank you for Registering with Fruniguard!";
-    const mailHtml = htmlRegisterContent();
-
-    await sendMail(user.email, mailSubject, mailHtml);
+    await sendMail(
+      user.email,
+      "Thank you for Registering with Fruniguard!",
+      htmlRegisterContent()
+    );
 
     const populatedUser = await UserModel.findById(user._id)
       .populate("designerProfile")
       .select("-password");
 
-    const responseData = {
+    return res.status(201).json({
       message: "User registered successfully",
       id: populatedUser._id,
       name: populatedUser.username,
       email: populatedUser.email,
       profilePic: populatedUser.profilePicture,
       role: populatedUser.role,
-    };
-
-    if (populatedUser.role === "designer" && populatedUser.designerProfile) {
-      responseData.designerProfile = populatedUser.designerProfile;
-    }
-
-    return res.status(201).json(responseData);
+      designerProfile: populatedUser.designerProfile || null,
+    });
   } catch (error) {
     console.error(error);
     return res
@@ -116,95 +122,72 @@ export const registerUser = async (req, res) => {
   }
 };
 
-export const loginUser = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
-      return res.status(400).json({ message: "All credentials are required!" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email and password are required" });
     }
 
+    // Find user by email
     const user = await UserModel.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: "User does not exist." });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    const isPasswordMatched = await bcryptjs.compare(password, user.password);
-    if (!isPasswordMatched) {
-      return res.status(403).json({ message: "Invalid credentials!" });
-    }
-
-    if (user.role === "admin") {
-      const token = createToken(user._id.toString(), email, "7d");
-
-      res.clearCookie(ADMIN_COOKIE_NAME, COOKIE_OPTIONS);
-      res.cookie(ADMIN_COOKIE_NAME, token, COOKIE_OPTIONS);
-
-      return res.status(200).json({
-        id: user._id,
-        name: user.username,
-        email: user.email,
-        profilePic: user.profilePicture,
-        role: user.role,
-      });
-    }
-
-    const token = createToken(user._id.toString(), email, "7d");
-
-    res.clearCookie(USER_COOKIE_NAME, COOKIE_OPTIONS);
-    res.cookie(USER_COOKIE_NAME, token, COOKIE_OPTIONS);
-    console.log("Req.cookies: ",req.cookie);
-    
-
-    const mailSubject = "New Login";
-    const mailHtml = htmlLoginAlertContent();
-
-    await sendMail(user.email, mailSubject, mailHtml);
-
-    return res.status(200).json({
-      id: user._id,
-      name: user.username,
-      email: user.email,
-      profilePic: user.profilePicture,
-      role: user.role,
-    });
-  } catch (error) {
-    console.error("Login error:", error);
-    return res
-      .status(500)
-      .json({ message: "Something went wrong during login." });
-  }
-};
-
-export const logoutUser = async (req, res) => {
-  try {
-    const user = await UserModel.findById(res.locals.jwtData.id);
-
-    if (!user) {
+    // Validate password
+    const isPasswordValid = await bcryptjs.compare(password, user.password);
+    if (!isPasswordValid) {
       return res
         .status(401)
-        .json({ message: "User not exist or Token Malfunctioned" });
+        .json({ success: false, message: "Invalid credentials" });
     }
 
-    if (user._id.toString() !== res.locals.jwtData.id) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+    // Generate JWT using user's role
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
-    if(user.role === "admin"){
-      res.clearCookie(ADMIN_COOKIE_NAME, COOKIE_OPTIONS);
-    }else{
-      res.clearCookie(USER_COOKIE_NAME,COOKIE_OPTIONS)
-    }
+    // Choose cookie name based on role
+    const cookieName =
+      user.role === "admin" ? ADMIN_COOKIE_NAME : USER_COOKIE_NAME;
+    setAuthCookie(res, cookieName, token);
 
-    return res.status(200).json({
-      message: "OK",
+    return res.json({
+      success: true,
+      message: `${user.role} logged in successfully`,
     });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ message: "Something went wrong while authorization" });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
+
+export const logout = (req, res) => {
+  try {
+    const jwtData = res.locals.jwtData;
+    if (!jwtData) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const cookieName = jwtData.role === "admin" ? ADMIN_COOKIE_NAME : USER_COOKIE_NAME;
+    clearAuthCookie(res, cookieName);
+
+    return res.json({
+      success: true,
+      message: `${jwtData.role} logged out successfully`,
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 
 export const verifyUser = async (req, res) => {
   try {

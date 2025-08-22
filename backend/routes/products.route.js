@@ -18,11 +18,12 @@ productRouter.post(
 productRouter.post('/remove',adminAuth,removeProduct)
 productRouter.put(
   "/update",
+  adminAuth,
   upload.single("image"),        
   uploadToCloudinary("Melodify"), 
   updateStyles
 );
-productRouter.get('/list',listProducts)
-productRouter.get('/single',signleProduct)
+productRouter.get('/list',adminAuth,listProducts)
+productRouter.get('/single',adminAuth,signleProduct)
 
 export default productRouter;
