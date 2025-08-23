@@ -37,9 +37,11 @@ const StyleDetail = () => {
     return () => window.removeEventListener("resize", updateCount);
   }, []);
 
-  const products = product.products.find((p) => p._id === id);
+  const products = product.products.find((p) => p._id === id) || product.livingroom.find((p)=> p._id == id) || product.stairs.find((p)=> p._id == id) || product.layout.find((p)=> p._id == id)  ;
+  console.log("Products: ",products);
+  
   const relatedProducts = product.products.filter(
-    (p) => p._id !== products._id && p.category === products.category
+    (p) => p.category === products.category
   );
 
   useEffect(() => {
@@ -258,8 +260,8 @@ const StyleDetail = () => {
             <motion.div
               key={i}
               whileHover={{ scale: 1.03 }}
-              className="relative overflow-hidden rounded-2xl bg-white shadow-lg border border-[#c1e5d3] p-4 group"
-              onClick={() => navigate(`/products/${p.category}/${p._id}`)}
+              className="relative overflow-hidden rounded-2xl bg-white shadow-lg border border-[#e5d9c1] p-4 group"
+              onClick={() => navigate(`/styles/${p.category}/${p._id}`)}
             >
               <img
                 src={p.image}

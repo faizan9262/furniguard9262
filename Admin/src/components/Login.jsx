@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Eye,
@@ -46,6 +46,12 @@ const AdminLogin = () => {
       toast.error(message, { id: "admin-login" });
     }
   };
+
+  useEffect(()=>{
+    console.log("Leggedin Status: ",adminContext.isLoggedIn);
+    
+    adminContext.isLoggedIn && navigate('/')
+  },[adminContext.isLoggedIn])
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-primary to-secondary text-white">

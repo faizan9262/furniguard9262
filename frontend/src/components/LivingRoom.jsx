@@ -1,22 +1,20 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import RoomCard from "./RoomCard";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/components/ui/button";
 import { Separator } from "@/components/components/ui/separator";
 import { FaArrowRight } from "react-icons/fa";
 import { useStyle } from "../context/StyleContext";
+import { toast } from "sonner";
+import axios from "axios";
 
 const LivingRoom = () => {
   const navigate = useNavigate();
   const sectionRef = useRef(null);
+  const style = useStyle()
 
-  const product = useStyle();
-
-  const livingroom = product.products.filter(
-    (lv) => lv.category === "livingroom"
-  );
-
-  const filteredLivingRooms = livingroom.slice(0, 4);
+  const filteredLivingRooms = style.livingroom.slice(0, 4);
+  
 
   return (
     <>
@@ -33,7 +31,7 @@ const LivingRoom = () => {
                 <RoomCard
                   onClick={() => {
                     window.scroll(0, 0);
-                    navigate(`/products/livingroom/${lv._id}`);
+                    navigate(`/styles/livingroom/${lv._id}`);
                   }}
                   img_src={lv.image}
                   title={lv.name}
@@ -44,17 +42,6 @@ const LivingRoom = () => {
             );
           })}
         </div>
-      </div>
-      <div className="flex items-center flex-col justify-center">
-        <Button
-          onClick={() => {
-            navigate("/rooms");
-            window.scroll(0, 0);
-          }}
-          className="my-5 text-lg bg-primary rounded-full"
-        >
-          Explore Latest Designs <FaArrowRight />
-        </Button>
       </div>
     </>
   );

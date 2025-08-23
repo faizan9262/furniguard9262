@@ -129,18 +129,11 @@ const Header = () => {
           <Button
             onClick={() => navigate("/new-appointment")}
             variant="secondary"
-            className={`bg-primary hover:bg-primary-foreground text-white text-base sm:text-lg font-normal py-4 sm:py-6 px-6 sm:px-8 ${
+            className={`bg-primary hover:bg-secondary text-white text-base sm:text-lg font-normal py-4 sm:py-6 px-6 sm:px-4 ${
               auth?.user?.role === "user" ? "flex" : "hidden"
             } items-center gap-2 group w-full sm:w-auto justify-center`}
           >
             Book Your Session Now
-            <motion.span
-              animate={{ x: [0, 5, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="group-hover:translate-x-1 transition-transform"
-            >
-              <FaArrowRight />
-            </motion.span>
           </Button>
         </motion.div>
       </div>

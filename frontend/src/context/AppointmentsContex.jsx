@@ -25,7 +25,7 @@ export const AppointmentsContexProvider = (props) => {
   }, [auth.isLoggedIn]);
 
   useEffect(() => {
-    console.log("User Aoopintments Array:",allAppointments);
+    // console.log("User Aoopintments Array:",allAppointments);
   }, [allAppointments]);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export const AppointmentsContexProvider = (props) => {
   }, [auth.isLoggedIn]);
 
   useEffect(() => {
-    console.log("Aoopintments Array Designer:",DesignerAllAppointments);
+    // console.log("Aoopintments Array Designer:",DesignerAllAppointments);
   }, [DesignerAllAppointments]);
 
   const removeAppointment = (id) => {

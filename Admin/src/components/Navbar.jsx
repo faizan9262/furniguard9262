@@ -15,13 +15,24 @@ import {
   SheetContent,
   SheetTrigger,
 } from "../components/components/ui/sheet";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from "../components/components/ui/alert-dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TbTransactionRupee } from "react-icons/tb";
 import { toast } from "sonner";
-import axios from "axios";
+import { useAdmin } from "../context/AdminContext";
 
 const AdminNavbar = () => {
   const [open, setOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const adminContext = useAdmin();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,18 +59,21 @@ const AdminNavbar = () => {
       );
     }
     if (path === "/designers") return currentPath.startsWith("/designers");
-    if (path === "/appointments") return currentPath.startsWith("/appointments");
-    if (path === "/notifications") return currentPath.startsWith("/notifications");
+    if (path === "/appointments")
+      return currentPath.startsWith("/appointments");
+    if (path === "/notifications")
+      return currentPath.startsWith("/notifications");
     return currentPath === path;
   };
 
   const handleLogout = async () => {
     try {
-      await axios.post("/user/admin/logout", {}, { withCredentials: true });
+      const response = await adminContext.adminLogout();
+      console.log("Response of logout: ", response);
       toast.success("Admin logged out successfully.");
-      navigate("/"); // Redirect to home/login page after logout
+      navigate("/login");
     } catch (error) {
-      toast.error("Something went wrong while logging out.");
+      toast.error(error);
     }
   };
 
@@ -76,24 +90,67 @@ const AdminNavbar = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex text-white items-center font-space gap-1">
-          {menuItems.map((item) => (
-            <Button
-              key={item.label}
-              onClick={() =>
-                item.label === "Logout" ? handleLogout() : navigate(item.path)
-              }
-              className={`text-sm py-6 font-semibold ${
-                isActive(item.path)
-                  ? "bg-secondary border-2 border-white hover:bg-primary hover:text-white"
-                  : "text-white hover:bg-secondary hover:border-2 border-white hover:text-white"
-              }`}
-              variant="ghost"
-            >
-              <div className="flex flex-col items-start">
-                <item.icon /> <span>{item.label}</span>
-              </div>
-            </Button>
-          ))}
+          {menuItems.map((item) =>
+            item.label === "Logout" ? (
+              <AlertDialog
+                key={item.label}
+                open={logoutDialogOpen}
+                onOpenChange={setLogoutDialogOpen}
+              >
+                <AlertDialogTrigger asChild>
+                  <Button
+                    className={`text-sm py-6 font-semibold text-white hover:bg-secondary hover:border-2 border-white hover:text-white`}
+                    variant="ghost"
+                  >
+                    <div className="flex flex-col items-start">
+                      <item.icon /> <span>{item.label}</span>
+                    </div>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-red-500">Confirm Logout</AlertDialogTitle>
+                    <AlertDialogDescription className="text-primary">
+                      Are you sure you want to logout?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setLogoutDialogOpen(false)}
+                      className="bg-primary border-none hover:bg-secondary tetx-white hover:text-white"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setLogoutDialogOpen(false);
+                        handleLogout();
+                      }}
+                      className="bg-red-500 hover:bg-red-600"
+                    >
+                      Logout
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            ) : (
+              <Button
+                key={item.label}
+                onClick={() => navigate(item.path)}
+                className={`text-sm py-6 font-semibold ${
+                  isActive(item.path)
+                    ? "bg-secondary border-2 border-white hover:bg-primary hover:text-white"
+                    : "text-white hover:bg-secondary hover:border-2 border-white hover:text-white"
+                }`}
+                variant="ghost"
+              >
+                <div className="flex flex-col items-start">
+                  <item.icon /> <span>{item.label}</span>
+                </div>
+              </Button>
+            )
+          )}
         </nav>
 
         {/* Mobile Controls */}
@@ -113,23 +170,65 @@ const AdminNavbar = () => {
               className="bg-primary h-[80%] rounded-sm m-3 border-2 border-white w-60"
             >
               <nav className="flex flex-col items-start font-space gap-4 mt-10">
-                {menuItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    onClick={() => {
-                      setOpen(false);
-                      item.label === "Logout" ? handleLogout() : navigate(item.path);
-                    }}
-                    className={`text-xl font-semibold ${
-                      isActive(item.path)
-                        ? "bg-secondary mx-2 border-2 border-white"
-                        : "text-white"
-                    }`}
-                    variant="ghost"
-                  >
-                    <item.icon /> {item.label}
-                  </Button>
-                ))}
+                {menuItems.map((item) =>
+                  item.label === "Logout" ? (
+                    <AlertDialog
+                      key={item.label}
+                      open={logoutDialogOpen}
+                      onOpenChange={setLogoutDialogOpen}
+                    >
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          className="text-xl font-semibold text-white"
+                          variant="ghost"
+                          onClick={() => setOpen(false)}
+                        >
+                          <item.icon /> {item.label}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to logout?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <Button
+                            variant="outline"
+                            onClick={() => setLogoutDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setLogoutDialogOpen(false);
+                              handleLogout();
+                            }}
+                          >
+                            Logout
+                          </Button>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ) : (
+                    <Button
+                      key={item.label}
+                      onClick={() => {
+                        setOpen(false);
+                        navigate(item.path);
+                      }}
+                      className={`text-xl font-semibold ${
+                        isActive(item.path)
+                          ? "bg-secondary mx-2 border-2 border-white"
+                          : "text-white"
+                      }`}
+                      variant="ghost"
+                    >
+                      <item.icon /> {item.label}
+                    </Button>
+                  )
+                )}
               </nav>
             </SheetContent>
           </Sheet>

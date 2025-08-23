@@ -21,19 +21,48 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
 import { backendUrl } from "./Add";
-import { Badge } from "@/components/components/ui/badge";
-import {
-  DeleteIcon,
-  EditIcon,
-  Grid2X2,
-  PlusCircle,
-  TrashIcon,
-} from "lucide-react";
-import { MdAdd } from "react-icons/md";
+import { PlusCircle, EditIcon, TrashIcon } from "lucide-react";
 import { CiGrid42 } from "react-icons/ci";
 
+// Skeleton Loader Component
+const SkeletonRow = () => (
+  <TableRow>
+    <TableCell>
+      <div className="w-20 h-20 bg-gray-200 animate-pulse rounded-md" />
+    </TableCell>
+    <TableCell>
+      <div className="h-4 w-32 bg-gray-200 animate-pulse rounded-md" />
+    </TableCell>
+    <TableCell>
+      <div className="h-4 w-24 bg-gray-200 animate-pulse rounded-md" />
+    </TableCell>
+    <TableCell className="text-right">
+      <div className="flex gap-2 justify-end">
+        <div className="h-8 w-16 bg-gray-200 animate-pulse rounded-md" />
+        <div className="h-8 w-16 bg-gray-200 animate-pulse rounded-md" />
+      </div>
+    </TableCell>
+  </TableRow>
+);
+
+const SkeletonCard = () => (
+  <div className="border rounded-xl bg-white px-4 py-3 shadow-sm space-y-2">
+    <div className="flex gap-4 items-center">
+      <div className="w-16 h-16 bg-gray-200 animate-pulse rounded-md" />
+      <div className="flex-1 space-y-2">
+        <div className="h-4 w-24 bg-gray-200 animate-pulse rounded-md" />
+        <div className="h-3 w-16 bg-gray-200 animate-pulse rounded-md" />
+      </div>
+      <div className="flex flex-col gap-2 items-end">
+        <div className="h-8 w-8 bg-gray-200 animate-pulse rounded-md" />
+        <div className="h-8 w-8 bg-gray-200 animate-pulse rounded-md" />
+      </div>
+    </div>
+  </div>
+);
+
 const Catalog = () => {
-  const { list, setList } = useAdmin();
+  const { list, setList, loading } = useAdmin();
   const [filteredList, setFilteredList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("all");
@@ -52,9 +81,11 @@ const Catalog = () => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.post(`${backendUrl}/api/products/remove`, {id},{
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        `${backendUrl}/api/products/remove`,
+        { id },
+        { withCredentials: true }
+      );
       if (res.data.success) {
         setList(list.filter((item) => item._id !== id));
         toast.success("Product deleted successfully");
@@ -88,7 +119,7 @@ const Catalog = () => {
       </h1>
 
       {/* Filters */}
-      <div className="flex  gap-4 mb-6 justify-center items-center">
+      <div className="flex gap-4 mb-6 justify-center items-center">
         <Input
           placeholder="Search Styles..."
           className="w-full border-r-4 border-b-4 border-secondary/40 bg-white text-[#1c4532] placeholder:text-secondary rounded-lg px-4 py-2 focus:ring-2 focus:ring-secondary shadow-sm"
@@ -112,6 +143,7 @@ const Catalog = () => {
             ))}
           </SelectContent>
         </Select>
+
         <Button
           variant="default"
           className="text-white flex gap-2 font-semibold"
@@ -122,11 +154,11 @@ const Catalog = () => {
       </div>
 
       {/* No Products */}
-      {filteredList.length === 0 ? (
+      {filteredList.length === 0 && !loading ? (
         <p className="text-center text-muted">No Styles found.</p>
       ) : (
         <>
-          {/* TABLE: Desktop Only */}
+          {/* TABLE: Desktop */}
           <div className="overflow-x-auto border rounded-xl bg-white shadow hidden md:block">
             <Table>
               <TableHeader className="bg-primary/20 text-primary backdrop-blur-md">
@@ -140,10 +172,10 @@ const Catalog = () => {
               <TableBody>
                 {filteredList.map((product) => (
                   <TableRow
+                    key={product._id}
                     onClick={() =>
                       navigate(`/styles/${product.category}/${product._id}`)
                     }
-                    key={product._id}
                   >
                     <TableCell>
                       <img
@@ -188,6 +220,8 @@ const Catalog = () => {
                     </TableCell>
                   </TableRow>
                 ))}
+
+                {loading && Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={i} />)}
               </TableBody>
             </Table>
           </div>
@@ -223,7 +257,9 @@ const Catalog = () => {
                       className="border-primary text-primary hover:bg-primary hover:text-white"
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/edit-style/${product.category}/${product._id}`);
+                        navigate(
+                          `/edit-style/${product.category}/${product._id}`
+                        );
                       }}
                     >
                       <EditIcon className="w-4 h-4" />
@@ -243,6 +279,8 @@ const Catalog = () => {
                 </div>
               </div>
             ))}
+
+            {loading && Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         </>
       )}

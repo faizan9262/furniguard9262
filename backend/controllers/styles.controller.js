@@ -74,42 +74,87 @@ const updateStyles = async (req, res) => {
 
 const listProducts = async (req, res) => {
   try {
-    const products = await Style.find({});
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
 
-    const ratedProducts = await Promise.all(
-      products.map(async (product) => {
-        const stats = await Rating.aggregate([
-          {
-            $match: {
-              targetType: "style",
-              targetId: new mongoose.Types.ObjectId(product._id),
-            },
-          },
-          {
-            $group: {
-              _id: "$targetId",
-              averageRating: { $avg: "$rating" },
-              totalRatings: { $sum: 1 },
-            },
-          },
-        ]);
-        return {
-          ...product.toObject(),
-          averageRating: stats[0]?.averageRating || 0,
-          totalRatings: stats[0]?.totalRatings || 0,
-        };
+    const categories = await Style.distinct("category"); // get all categories
+    const limitPerCategory = Math.ceil(limit / categories.length);
+
+    let products = [];
+
+    for (const cat of categories) {
+      const catProducts = await Style.find({ category: cat })
+        .skip((page - 1) * limitPerCategory)
+        .limit(limitPerCategory)
+        .lean();
+      products.push(...catProducts);
+    }
+
+    products = products.sort(() => Math.random() - 0.5);
+    const productIds = products.map((p) => p._id);
+    const stats = await Rating.aggregate([
+      { $match: { targetType: "style", targetId: { $in: productIds } } },
+      {
+        $group: {
+          _id: "$targetId",
+          averageRating: { $avg: "$rating" },
+          totalRatings: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const statsMap = {};
+    stats.forEach((stat) => {
+      statsMap[stat._id.toString()] = stat;
+    });
+
+    const ratedProducts = products.map((product) => ({
+      ...product,
+      averageRating: statsMap[product._id.toString()]?.averageRating || 0,
+      totalRatings: statsMap[product._id.toString()]?.totalRatings || 0,
+    }));
+
+    res.status(200).json({ success: true, ratedProducts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Something went wrong while fetching products details.",
+    });
+  }
+};
+
+export const getHomeProducts = async (req, res) => {
+  try {
+    const { categories, limit } = req.query;
+
+    if (!categories) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Categories are required" });
+    }
+
+    const categoryList = categories.split(",");
+    const limitPerCategory = limit ? parseInt(limit) : 0; // 0 means no limit
+
+    // Fetch products for each category
+    const results = await Promise.all(
+      categoryList.map(async (category) => {
+        const query = Style.find({ category }).lean();
+        if (limitPerCategory > 0) query.limit(limitPerCategory);
+        return query;
       })
     );
 
+    // Flatten the nested arrays into a single array
+    const flattenedResults = results.flat();
+
     res.status(200).json({
       success: true,
-      ratedProducts,
+      data: flattenedResults,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      message: "Something went wrong while fetching products details.",
-    });
+    console.error("Error fetching home products:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 

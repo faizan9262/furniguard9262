@@ -10,7 +10,9 @@ export const createToken = (id,email,expiresIn)=>{
 
 export const verifyToken = async (req, res, next) => {
   try {
-    const token = req.cookies['auth-cookie'];
+    const token = req.cookies['auth_cookie'];
+    console.log("User Token : ",token);
+    
     
     if (!token || token.trim() === "") {
       return res.status(401).json({ message: "Token Not Received" });

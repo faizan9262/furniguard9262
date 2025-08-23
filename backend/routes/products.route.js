@@ -1,8 +1,9 @@
 import express from 'express'
 import adminAuth from '../middleware/adminAuth.js'
-import { addProduct, listProducts, removeProduct, signleProduct, updateStyles } from '../controllers/styles.controller.js'
+import { addProduct, getHomeProducts, listProducts, removeProduct, signleProduct, updateStyles } from '../controllers/styles.controller.js'
 import upload from '../middleware/multer.js'
 import { uploadToCloudinary } from "../middleware/multer.js";
+import { verifyToken } from '../utils/token-manager.js';
 
 const productRouter = express.Router()
 
@@ -24,6 +25,8 @@ productRouter.put(
   updateStyles
 );
 productRouter.get('/list',adminAuth,listProducts)
+productRouter.get('/user-list',verifyToken,listProducts)
+productRouter.get('/home',verifyToken,getHomeProducts)
 productRouter.get('/single',adminAuth,signleProduct)
 
 export default productRouter;

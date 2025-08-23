@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 const adminAuth = async (req, res, next) => {
   try {
     const token = req.cookies["admin_cookie"];
-    console.log("Admin token from cookie:", token);
+    // console.log("Admin token from cookie:", token);
 
     if (!token) {
       return res.status(401).json({

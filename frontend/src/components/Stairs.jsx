@@ -1,21 +1,18 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import StairCard from "./StairCard";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import axios from "axios";
 import { useStyle } from "../context/StyleContext";
 
 const Stairs = () => {
   const navigate = useNavigate();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
+  const style = useStyle()
 
-  const product = useStyle();
-
-  const stairs = product.products.filter(
-    (stair) => stair.category === "stairs"
-  );
-
-  const filterStairs = stairs.slice(0, 4);
+  const filterStairs = style.stairs.slice(0, 4);
 
 
   const cardVariants = {
@@ -47,7 +44,7 @@ const Stairs = () => {
                 >
                   <StairCard
                     onClick={() => {
-                      navigate(`products/stairs/${stair._id}`);
+                      navigate(`styles/stairs/${stair._id}`);
                       window.scrollTo(0, 0);
                     }}
                     img_src={stair.image}

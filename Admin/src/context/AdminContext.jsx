@@ -3,9 +3,8 @@ import {
   authStatus,
   getAllAppointments,
   getAllDesigners,
-  getAllProducts,
+  getProductsByPage,
 } from "../helper/apis.js";
-import { backendUrl } from "../pages/Add";
 import axios from "axios";
 
 export const AdminContex = createContext();
@@ -15,8 +14,11 @@ export const AdminContexProvider = (props) => {
   const [designers, setDesigners] = useState([]);
   const [allAppointments, setAllAppointments] = useState([]);
   const [list, setList] = useState([]);
+  const [page, setPage] = useState(1); // current page
+  const [hasMore, setHasMore] = useState(true); // whether more products exist
+  const [loading, setLoading] = useState(false);
   const [admin, setAdmin] = useState({});
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   const adminLogin = async (email, password) => {
     try {
@@ -28,6 +30,7 @@ export const AdminContexProvider = (props) => {
 
       if (response.status === 200) {
         const data = response.data;
+        setIsLoggedIn(true);
         setAdmin({
           email: data.email,
           name: data.name,
@@ -42,6 +45,27 @@ export const AdminContexProvider = (props) => {
       throw error;
     }
   };
+
+  const adminLogout = async () => {
+    try {
+      const response = await axios.post(
+        "/user/admin/logout",
+        {},
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        const data = response.data;
+        setIsLoggedIn(false);
+        return response;
+      }
+    } catch (error) {
+      if (error.response) throw error.response;
+      throw error;
+    }
+  };
+
+  console.log("Logged In: ", isLoggedIn);
 
   useEffect(() => {
     if (admin) {
@@ -87,25 +111,41 @@ export const AdminContexProvider = (props) => {
     getAllDesignerFromDB();
   }, []);
 
-  useEffect(() => {
-    const fetchList = async () => {
-      try {
-        const response = await getAllProducts();
-        // console.log("Products response: ",response);
+  const loadProducts = async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const newProducts = await getProductsByPage(page);
+      if (newProducts.length === 0) {
+        setHasMore(false);
+      } else {
+        setList((prev) => [...prev, ...newProducts]);
+        setPage((prev) => prev + 1);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
 
-        if (response.success) {
-          const allProducts = response.ratedProducts;
-          // console.log("All products: ",allProducts);
-          setList(allProducts);
-        } else {
-          // toast.error(response.data.message);
-        }
-      } catch (error) {
-        // toast.error("Failed to fetch products.");
+  // initial load
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  // scroll listener
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 500
+      ) {
+        loadProducts();
       }
     };
-    fetchList();
-  }, []);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, hasMore, page]);
 
   useEffect(() => {
     // console.log("Designers: ",designers);
@@ -142,6 +182,9 @@ export const AdminContexProvider = (props) => {
     adminLogin,
     admin,
     setAllAppointments,
+    isLoggedIn,
+    adminLogout,
+    loading
   };
 
   return (

@@ -14,23 +14,25 @@ const DesignBannerLeft = ({ img_src, title, description,onClick }) => {
     >
       <div onClick={onClick} className="flex flex-col cursor-pointer lg:flex-row items-center gap-0 lg:gap-8">
         {/* Image Section */}
-        <motion.div
-          className="w-full lg:w-1/2 relative overflow-hidden"
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <img
-            src={img_src}
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-            alt={title}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
-        </motion.div>
-
+        {/* Image Section */}
+<motion.div
+  className="w-full lg:w-1/2 relative overflow-hidden"
+  initial={{ scale: 0.95, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{ duration: 0.6, delay: 0.2 }}
+>
+  <div className="w-full aspect-[16/9]">
+    <img
+      src={img_src}
+      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+      alt={title}
+    />
+  </div>
+  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+</motion.div>
         {/* Content Section */}
         <motion.div
-          className="w-full lg:w-1/2 p-6 sm:p-8 md:p-10"
+          className="w-full lg:w-1/2 p-6"
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -40,7 +42,7 @@ const DesignBannerLeft = ({ img_src, title, description,onClick }) => {
               {title}
             </h1>
 
-            <p className="text-secondary text-base md:text-lg">
+            <p className="text-secondary text-base md:text-lg line-clamp-4 md:line-clamp-none">
               {description ||
                 "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Mollitia, maiores repellendus! Ipsa, cumque ducimus voluptate eos incidunt animi reprehenderit."}
             </p>

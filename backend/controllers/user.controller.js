@@ -160,10 +160,7 @@ export const login = async (req, res) => {
       user.role === "admin" ? ADMIN_COOKIE_NAME : USER_COOKIE_NAME;
     setAuthCookie(res, cookieName, token);
 
-    return res.json({
-      success: true,
-      message: `${user.role} logged in successfully`,
-    });
+    return res.status(200).json(user)
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
@@ -179,10 +176,7 @@ export const logout = (req, res) => {
     const cookieName = jwtData.role === "admin" ? ADMIN_COOKIE_NAME : USER_COOKIE_NAME;
     clearAuthCookie(res, cookieName);
 
-    return res.json({
-      success: true,
-      message: `${jwtData.role} logged out successfully`,
-    });
+    return res.status(200).json({success:true,essage:"Log out successful"})
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }

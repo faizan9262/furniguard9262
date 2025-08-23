@@ -69,16 +69,7 @@ const Styles = () => {
   ];
 
   const allProducts = product.products;
-
-  // Shuffle function
-  const shuffleArray = (array) => {
-    return array
-      .map((item) => ({ ...item, sort: Math.random() }))
-      .sort((a, b) => a.sort - b.sort) 
-      .map(({ sort, ...item }) => item); 
-  };
-
-  const filteredProducts = shuffleArray(
+  const filteredProducts = (
     allProducts?.filter((p) => {
       const matchCategory =
         !category || category === "all" || p.category === category;
@@ -91,7 +82,6 @@ const Styles = () => {
     }) || []
   );
 
-  
 
   return (
     <div className="min-h-screen px-4 sm:px-8 py-10 bg-gradient-to-br from-white via-[#fdf7f0] to-[#fff5e6]">

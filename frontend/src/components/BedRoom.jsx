@@ -14,8 +14,7 @@ const BedRoom = () => {
   const furniture = product.products.filter((fr)=> fr.category === "furniture")
   
   
-  const filterdFurniture = furniture.slice(5,7)
-  // console.log("Furniture: ",filterdFurniture);
+  const filterdFurniture = furniture.slice(1,3)
 
 
 
@@ -50,7 +49,7 @@ const BedRoom = () => {
               >
                 <LayoutCard
                   onClick={() => {
-                    navigate(`/products/${fr.category}/${fr._id}`);
+                    navigate(`/styles/${fr.category}/${fr._id}`);
                     window.scroll(0, 0);
                   }}
                   title={fr.name?.split(" ").slice(0, 2).join(" ")}

@@ -226,13 +226,10 @@ export const getProductRating = async (productId) => {
 
 // Products Apis
 
-export const getAllProducts = async () => {
-  const response = await axios.get("/products/list");
-  if (response.status !== 200) {
-    throw new Error("Unable to Load All Products");
-  }
-  const data = await response.data;
-  return data;
+export const getProductsByPage = async (page) => {
+  const response = await axios.get(`/products/user-list?page=${page}&limit=20`);
+  if (response.status !== 200) throw new Error("Unable to Load Products");
+  return response.data.ratedProducts;
 };
 
 // Designer Apis

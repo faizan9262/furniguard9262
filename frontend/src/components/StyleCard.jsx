@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { Card, CardTitle } from "./components/ui/card";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
@@ -26,12 +25,7 @@ const StyleCard = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="cursor-pointer w-full overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all"
-    >
+    <div className="cursor-pointer w-full overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all">
       <Card
         className="relative w-full overflow-hidden rounded-2xl group p-0"
         onClick={onClick}
@@ -82,7 +76,7 @@ const StyleCard = ({
           </CardTitle>
         </div>
       </Card>
-    </motion.div>
+    </div>
   );
 };
 
