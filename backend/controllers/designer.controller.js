@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Designer } from "../models/designer.model.js";
 import { Rating } from "../models/rating.model.js";
 import { UserModel } from "../models/user.model.js";
+import logger from "../utils/logger.js";
 
 export const getAllDesingers = async (req, res) => {
   try {
@@ -38,7 +39,7 @@ export const getAllDesingers = async (req, res) => {
 
     res.status(200).json(ratedDesigners);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res
       .status(500)
       .json({ message: "Something went wrong during fetching all designers." });
@@ -92,7 +93,7 @@ export const editDesignerProfile = async (req, res) => {
 
     res.status(200).json(updatedDesigner);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res
       .status(500)
       .json({ message: "Something went wrong during fetching all designers." });
@@ -102,8 +103,6 @@ export const editDesignerProfile = async (req, res) => {
 export const addAvailableSolts = async (req, res) => {
   try {
     const { slots } = req.body;
-
-    console.log("Slots received:", slots);
 
     const user = await UserModel.findById(res.locals.jwtData.id);
 
@@ -148,7 +147,7 @@ export const addAvailableSolts = async (req, res) => {
 
     res.status(200).json(updatedDesigner);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({
       message: "Something went wrong during adding slots to designer profile",
     });
@@ -197,7 +196,7 @@ export const addProjectToProfile = async (req, res) => {
 
     res.status(200).json(designer.projects);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({
       message: "Something went wrong during adding project to designer profile",
     });
@@ -230,7 +229,7 @@ export const deleteProjectFromProfile = async (req, res) => {
       .status(200)
       .json({ message: "Project deleted", projects: designer.projects });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({
       message: "Something went wrong during adding project to designer profile",
     });

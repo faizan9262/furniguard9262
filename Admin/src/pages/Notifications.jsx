@@ -14,6 +14,7 @@ import { GrUserWorker } from "react-icons/gr";
 import adminSocket from "../adminSocket";
 import { FaBell } from "react-icons/fa";
 import { FaArrowRightArrowLeft } from "react-icons/fa6";
+import { toast } from "sonner";
 
 const Notifications = () => {
   const [chats, setChats] = useState([]);
@@ -26,10 +27,9 @@ const Notifications = () => {
     const fetchChats = async () => {
       try {
         const res = await axios.get(`/message/get-all`);
-        console.log("Fetched chats:", res.data);
         setChats(res.data);
       } catch (err) {
-        console.error("Failed to fetch admin inbox:", err);
+        toast.error("Failed to fetch admin inbox");
       } finally {
         setLoading(false);
       }

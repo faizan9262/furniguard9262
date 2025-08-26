@@ -26,7 +26,6 @@ export const DesignerContexProvider = (props) => {
     if (designers.length > 0 && userId) {
       const designerProfile = designers.filter((d) => d.user?._id === userId);
       setCurrentDesigners(designerProfile);
-      // console.log("Current: ",currentDesigner);
     }
   }, [designers, userId]);
 

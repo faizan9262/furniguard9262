@@ -124,8 +124,8 @@ const Styles = () => {
           className="flex gap-2 md:gap-4"
           columnClassName="space-y-2 md:space-y-4"
         >
-          {filteredProducts.map((product) => (
-            <div key={product._id} className="break-inside-avoid">
+          {filteredProducts.map((product,index=1) => (
+            <div key={index} className="break-inside-avoid">
               <ProductCard
                 id={product._id}
                 img_src={product.image || product.images[0]}

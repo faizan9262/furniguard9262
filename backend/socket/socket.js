@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { Message } from "../models/Message.model.js";
 import { ReadStatus } from "../models/readstatus.model.js";
+import logger from "../utils/logger.js";
 
 export const initSocket = (httpServer) => {
   const io = new Server(httpServer, {
@@ -11,11 +12,11 @@ export const initSocket = (httpServer) => {
   });
 
   io.on("connection", (socket) => {
-    console.log(`Client connected: ${socket.id}`);
+    logger.info(`Client connected: ${socket.id}`);
 
     socket.on("join", (userIdOrRole) => {
       socket.join(userIdOrRole);
-      console.log(`Joined room: ${userIdOrRole}`);
+      logger.info(`Joined room: ${userIdOrRole}`);
     });
 
     socket.on("send-message", async (data) => {
@@ -37,7 +38,7 @@ export const initSocket = (httpServer) => {
           partnerId: to,
         });
 
-        console.log(
+        logger.info(
           "Last read before: ",
           new Date(readStatus.lastRead).toLocaleTimeString()
         );
@@ -51,7 +52,7 @@ export const initSocket = (httpServer) => {
           { new: true, upsert: true }
         );
 
-        console.log(
+        logger.info(
           "Updated Read Status: ",
           new Date(updatedReadStatus.lastRead).toLocaleTimeString()
         );
@@ -63,7 +64,7 @@ export const initSocket = (httpServer) => {
         
         // io.to().emit("receive-message", savedMessage);
       } catch (err) {
-        console.error("Message save error:", err.message);
+        logger.error("Message save error:", err.message);
         socket.emit("error", { message: "Failed to send message." });
       }
     });
@@ -77,7 +78,7 @@ export const initSocket = (httpServer) => {
     });
 
     socket.on("disconnect", () => {
-      console.log("Client disconnected:", socket.id);
+      logger.info("Client disconnected:", socket.id);
     });
   });
 };

@@ -2,7 +2,7 @@ import { Message } from "../models/Message.model.js";
 import { UserModel } from "../models/user.model.js";
 import { Designer } from "../models/designer.model.js"; // Adjust path if needed
 import { ReadStatus } from "../models/readstatus.model.js";
-
+import logger from "../utils/logger.js";
 
 export const getConvo = async (req, res) => {
   try {
@@ -15,28 +15,29 @@ export const getConvo = async (req, res) => {
       ],
     }).sort({ time: 1 });
 
-      const readStatus = await ReadStatus.findOne({
-    userId: user2Id,
-    partnerId: user1Id,
-  });
+    const readStatus = await ReadStatus.findOne({
+      userId: user2Id,
+      partnerId: user1Id,
+    });
 
-  const lastRead = readStatus?.lastRead || null;
+    const lastRead = readStatus?.lastRead || null;
 
-  // 3. Map messages and attach isSeen
-  const conversationWithSeen = conversation.map((msg) => {
-    const isFromUser1 = msg.from.toString() === user1Id;
-    const isSeen =
-      lastRead && isFromUser1 && new Date(lastRead) >= new Date(msg.createdAt);
-    return {
-      ...msg.toObject(),
-      isSeen,
-    };
-  });
+    // 3. Map messages and attach isSeen
+    const conversationWithSeen = conversation.map((msg) => {
+      const isFromUser1 = msg.from.toString() === user1Id;
+      const isSeen =
+        lastRead &&
+        isFromUser1 &&
+        new Date(lastRead) >= new Date(msg.createdAt);
+      return {
+        ...msg.toObject(),
+        isSeen,
+      };
+    });
 
-   res.status(200).json(conversationWithSeen);
-
+    res.status(200).json(conversationWithSeen);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res
       .status(500)
       .json({ message: "Something went while fetching conversation" });
@@ -47,23 +48,14 @@ export const getChatsForDesigner = async (req, res) => {
   try {
     const { designerId } = req.params;
 
-    // console.log("📥 Fetching inbox for designer:", designerId);
-
-    // Step 1: Get all messages where designer is either sender or receiver
     const messages = await Message.find({
       $or: [
         { from: designerId, fromModel: "Designer" },
         { to: designerId, toModel: "Designer" },
       ],
     }).sort({ time: -1 });
-    
-  
-    // console.log("📥 Messages for designer:", messages);
 
-    // Step 2: Group by other party (user)
     const chatMap = new Map();
-
-    // console.log("📥 Messages for designer:", messages);
 
     for (const msg of messages) {
       let userId = null;
@@ -77,22 +69,14 @@ export const getChatsForDesigner = async (req, res) => {
         userId = msg.to.toString(); // msg to user
       }
 
-      // console.log("User it at each iteration: ",userId);
-      
-
       if (userId && !chatMap.has(userId)) {
         chatMap.set(userId, msg); // keep only latest msg per user
       }
-    }    
+    }
 
     const chatList = Array.from(chatMap.values());
     const userIds = Array.from(chatMap.keys());
 
-    // console.log("Chat list: ",chatList);
-    // console.log("User Ids list: ",userIds);
-    
-
-    // Step 3: Fetch user details
     const users = await UserModel.find({ _id: { $in: userIds } })
       .select("_id username profilePicture role")
       .lean();
@@ -100,9 +84,6 @@ export const getChatsForDesigner = async (req, res) => {
     const userMap = new Map();
     users.forEach((user) => userMap.set(user._id.toString(), user));
 
-    // console.log("📥 User map for designer:", userMap);
-
-    // Step 4: Fetch read status for all users chatting with this designer
     const readStatuses = await ReadStatus.find({
       userId: designerId,
       partnerId: { $in: userIds },
@@ -113,13 +94,9 @@ export const getChatsForDesigner = async (req, res) => {
       readMap.set(rs.partnerId.toString(), rs.lastRead);
     });
 
-    // Step 4: Attach user info to each message
     const enrichedChats = chatList.map((msg) => {
       const userId =
         msg.fromModel === "UserModel" ? msg.from.toString() : msg.to.toString();
-       
-      console.log("UserId : ",userId);
-      
 
       return {
         sender: userId,
@@ -127,14 +104,13 @@ export const getChatsForDesigner = async (req, res) => {
         message: msg.message,
         time: msg.time,
         user: userMap.get(userId),
-        lastRead: readMap.get(userId) || null, // ✅ added
+        lastRead: readMap.get(userId) || null,
       };
     });
-    // console.log("📥 Enriched chats for designer:", enrichedChats);
 
     res.status(200).json(enrichedChats);
   } catch (error) {
-    console.error("Error fetching designer inbox:", error);
+    logger.error("Error fetching designer inbox:", error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -157,9 +133,6 @@ export const getChatsForUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // console.log("UserId admin: ",userId);
-    
-    // Step 1: Get messages where user is involved
     const messages = await Message.find({
       $or: [
         { from: userId, fromModel: "UserModel" },
@@ -167,36 +140,28 @@ export const getChatsForUser = async (req, res) => {
       ],
     }).sort({ time: -1 });
 
-    // console.log("Messages: ",messages);
-    
 
     const chatMap = new Map();
 
-    // Step 2: Group messages by designer (identified by userId stored in message)
     for (const msg of messages) {
       let designerUserId = null;
 
       if (msg.fromModel === "Designer") {
         designerUserId = msg.from.toString();
-        
       } else if (msg.toModel === "Designer") {
         designerUserId = msg.to.toString();
       }
 
-      // console.log("DesignerUserId: ",designerUserId);
-      
+
       if (designerUserId && !chatMap.has(designerUserId)) {
         chatMap.set(designerUserId, msg); // latest message from each designer
       }
     }
 
-    // console.log("Chat map: ",chatMap);
-    
 
     const chatList = Array.from(chatMap.values());
     const designerUserIds = Array.from(chatMap.keys());
 
-    // Step 3: Fetch Designer profiles by their linked `user` ID
     const designers = await Designer.find({ user: { $in: designerUserIds } })
       .populate("user", "username profilePicture role")
       .lean();
@@ -234,10 +199,9 @@ export const getChatsForUser = async (req, res) => {
 
         const designer = designerMap.get(designerUserId);
         if (!designer) return null;
-        // console.log("Sende in user inbox: ",designer?._id);
-        
+
         return {
-          sender:designer?._id,
+          sender: designer?._id,
           _id: msg._id,
           message: msg.message,
           time: msg.time,
@@ -245,14 +209,11 @@ export const getChatsForUser = async (req, res) => {
           lastRead: readMap.get(designerUserId) || null,
         };
       })
-      .filter(Boolean); // Remove null entrie
-
-      // console.log("Chats: ",enrichedChats);
-      
+      .filter(Boolean); 
 
     res.status(200).json(enrichedChats);
   } catch (error) {
-    console.error("Error fetching user inbox:", error);
+    logger.error("Error fetching user inbox:", error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -284,8 +245,6 @@ export const getAdminInbox = async (req, res) => {
       if (msg.toModel === "Designer") designerIds.add(msg.to.toString());
     }
 
-    // console.log("📥 User IDs for admin inbox:", designerIds);
-
     const users = await UserModel.find({
       _id: { $in: Array.from(userIds) },
     }).select("_id username profilePicture");
@@ -293,9 +252,6 @@ export const getAdminInbox = async (req, res) => {
     const designers = await UserModel.find({
       _id: { $in: Array.from(designerIds) },
     }).select("_id username profilePicture");
-
-    // console.log("📥 Users for admin inbox:", users);
-    // console.log("📥 Designers for admin inbox:", designers);
 
     const userMap = new Map();
     users.forEach((u) =>
@@ -307,8 +263,6 @@ export const getAdminInbox = async (req, res) => {
       })
     );
 
-    // console.log("📥 User map for admin inbox:", userMap);
-
     const designerMap = new Map();
     designers.forEach((d) => {
       designerMap.set(d._id.toString(), {
@@ -318,8 +272,6 @@ export const getAdminInbox = async (req, res) => {
         role: "designer",
       });
     });
-
-    // console.log("📥 Designer map for admin inbox:", designerMap);
 
     const enrichedChats = chatList.map((msg) => {
       const fromId = msg.from.toString();
@@ -363,7 +315,7 @@ export const getAdminInbox = async (req, res) => {
 
     res.status(200).json(enrichedChats);
   } catch (error) {
-    console.error("❌ Error fetching admin inbox:", error);
+    logger.error("Failed to fetchi admin inbox:", error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };

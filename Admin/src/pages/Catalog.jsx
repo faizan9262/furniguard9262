@@ -93,7 +93,6 @@ const Catalog = () => {
         toast.error(res.data.message);
       }
     } catch (err) {
-      console.error(err);
       toast.error("Failed to delete product");
     }
   };

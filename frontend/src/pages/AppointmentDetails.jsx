@@ -66,12 +66,6 @@ const AppointmentDetailPage = () => {
 
   const currentAppointment = availableAppointments.find((ap) => ap._id === id);
 
-  console.log(
-    "Current:",
-    currentAppointment?.products.map((p) => p.product.name)
-  );
-
-  console.log("Current: ", currentAppointment);
 
   const handleCancelAppointment = async () => {
     try {
@@ -81,12 +75,9 @@ const AppointmentDetailPage = () => {
       appointment.removeAppointment(currentAppointment._id);
       navigate("/appointments");
     } catch (error) {
-      console.error(error);
       toast.error(error.message || "Something went wrong", { id: "cancel-ap" });
     }
   };
-
-  // console.log("Designer? ", isDesigner);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
@@ -99,7 +90,7 @@ const AppointmentDetailPage = () => {
           <p className="text-muted-foreground text-sm">
             Here's everything about your appointment.
           </p>
-          {currentAppointment?.status !== "confirmed" &&
+          {currentAppointment?.status === "pending" &&
             auth.user.role !== "designer" && (
               <div className="flex mt-4 items-start justify-center gap-4 flex-col">
                 Pay now to confirm your appointment

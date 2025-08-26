@@ -14,9 +14,7 @@ import { useAdmin } from "../context/AdminContext";
 const AdminHome = () => {
   const navigate = useNavigate();
   const adminContext = useAdmin()
-
-  // console.log("Admin Id: ", adminContext.admin.id);
-
+  
   return (
     <div className="h-full flex flex-col items-center p-6">
       {/* Hero Section */}

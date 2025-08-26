@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -16,60 +22,63 @@ export const StyleContextProvider = (props) => {
   const [hasMore, setHasMore] = useState(true); // whether more products exist
   const [loading, setLoading] = useState(false);
   const [wishlist, setWishlist] = useState([]);
-  const [layout,setLayout] = useState([])
-  const [livingroom,setLivingRoom] = useState([])
-  const [stairs,setStairs] = useState([])
+  const [layout, setLayout] = useState([]);
+  const [livingroom, setLivingRoom] = useState([]);
+  const [stairs, setStairs] = useState([]);
   const user = useAuth();
 
-
-  useEffect(()=>{
-    const getLayout = async()=>{
+  useEffect(() => {
+    const getLayout = async () => {
       try {
-        const response = await axios.get("/products/home?categories=layout&limit=4")
-        // console.log("Response in desing: ",response.data.data);
-        const data = response.data.data
-        setLayout(data.map((d)=>d))
+        const response = await axios.get(
+          "/products/home?categories=layout&limit=10"
+        );
+        const data = response.data.data;
+        setLayout(data.map((d) => d));
       } catch (error) {
-        toast.error("Failed to load livingrooms")
+        toast.error("Failed to load livingrooms");
       }
-    }
-    getLayout()
-  },[])
+    };
+    getLayout();
+  }, []);
 
-
-  useEffect(()=>{
-    const getLivingRoom = async()=>{
+  useEffect(() => {
+    const getLivingRoom = async () => {
       try {
-        const response = await axios.get("/products/home?categories=livingroom&limit=4")
-        // console.log("Response in living: ",response.data.data);
-        const data = response.data.data
-        setLivingRoom(data.map((d)=>d))
+        const response = await axios.get(
+          "/products/home?categories=livingroom&limit=4"
+        );
+        const data = response.data.data;
+        setLivingRoom(data.map((d) => d));
       } catch (error) {
-        toast.error("Failed to load livingrooms")
+        toast.error("Failed to load livingrooms");
       }
-    }
-    getLivingRoom()
-  },[])
+    };
+    getLivingRoom();
+  }, []);
 
-
-  useEffect(()=>{
-    const getstairs = async ()=>{
+  useEffect(() => {
+    const getstairs = async () => {
       try {
-        const response = await axios.get("/products/home?categories=stairs&limit=4")
-        const data = response.data.data
-        setStairs(data.map((d)=>d))
+        const response = await axios.get(
+          "/products/home?categories=stairs&limit=4"
+        );
+        const data = response.data.data;
+        setStairs(data.map((d) => d));
       } catch (error) {
-        toast.error("Failed to load stairs")
+        toast.error("Failed to load stairs");
       }
-    }
-    getstairs()
-  },[])
+    };
+    getstairs();
+  }, []);
 
-  const loadProducts = async () => {
+  const exclude = products.map((p) => p._id);
+
+  const loadProducts = useCallback(async () => {
     if (loading || !hasMore) return;
     setLoading(true);
     try {
-      const newProducts = await getProductsByPage(page);
+      const newProducts = await getProductsByPage(page, exclude);
       if (newProducts.length === 0) {
         setHasMore(false);
       } else {
@@ -77,29 +86,27 @@ export const StyleContextProvider = (props) => {
         setPage((prev) => prev + 1);
       }
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to load styles");
     }
     setLoading(false);
-  };
+  }, [page, hasMore, loading]);
 
   // initial load
   useEffect(() => {
     loadProducts();
   }, []);
 
-  // scroll listener
   useEffect(() => {
     const handleScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-        document.body.offsetHeight - 500
-      ) {
-        loadProducts();
-      }
+      const scrolled = window.scrollY + window.innerHeight;
+      const halfHeight = document.body.offsetHeight / 2;
+      if (scrolled >= halfHeight) loadProducts();
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, page]);
+  }, [loadProducts]);
+  // only add once
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -108,16 +115,12 @@ export const StyleContextProvider = (props) => {
         setWishlist(response.data.products || []);
         user.setWishlistCount(response.data.products.length);
       } catch (error) {
-        console.error("Error fetching wishlist:", error.message);
+        toast.error("Failed to fetching wishlist");
       }
     };
 
     fetchWishlist();
   }, []);
-
-  useEffect(() => {
-    // console.log("Products Array:",products);
-  }, [products]);
 
   const value = {
     products,
@@ -125,7 +128,7 @@ export const StyleContextProvider = (props) => {
     setWishlist,
     layout,
     livingroom,
-    stairs
+    stairs,
   };
   return (
     <StyleContext.Provider value={value}>

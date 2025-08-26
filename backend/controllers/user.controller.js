@@ -11,6 +11,7 @@ import { sendMail } from "../utils/sendmail.js";
 import { generateOtp } from "../utils/generateOtp.js";
 import { Designer } from "../models/designer.model.js";
 import { UserModel } from "../models/user.model.js";
+import logger from "../utils/logger.js";
 
 dotenv.config();
 
@@ -115,7 +116,7 @@ export const registerUser = async (req, res) => {
       designerProfile: populatedUser.designerProfile || null,
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res
       .status(500)
       .json({ message: "Something went wrong during signup." });
@@ -206,7 +207,7 @@ export const verifyUser = async (req, res) => {
       id: user._id,
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res
       .status(500)
       .json({ message: "Something went wrong while authorization" });
@@ -240,7 +241,7 @@ export const sendVerifyEmailOtp = async (req, res) => {
       message: "OK",
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({
       message: "Something went wrong while sending email verification OTP",
     });
@@ -279,7 +280,7 @@ export const verifyEmailOtp = async (req, res) => {
       message: "OK",
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({
       message: "Something went wrong while email verification",
     });
@@ -311,7 +312,7 @@ export const sendPassswordResetOtp = async (req, res) => {
       message: "OK",
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({
       message: "Something went wrong while sending password reset OTP",
     });
@@ -376,7 +377,7 @@ export const resetPassword = async (req, res) => {
       message: "OK",
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res
       .status(500)
       .json({ message: "Something went wrong while resetting password" });
@@ -446,7 +447,7 @@ export const updatePassword = async (req, res) => {
       message: "OK",
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res
       .status(500)
       .json({ message: "Something went wrong while updating password" });
@@ -455,7 +456,6 @@ export const updatePassword = async (req, res) => {
 
 export const changeProfilePic = async (req, res) => {
   try {
-    // console.log("Request file:", req.file.path);
     const user = await UserModel.findById(res.locals.jwtData.id);
     if (!user) {
       return res
@@ -473,8 +473,6 @@ export const changeProfilePic = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // console.log("File received:", req.file);
-
     const imageUrl = req.file.path;
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -488,7 +486,7 @@ export const changeProfilePic = async (req, res) => {
       profilePicture: updatedUser.profilePicture,
     });
   } catch (error) {
-    console.error("Error changing profile picture:", error);
+    logger.error("Error changing profile picture:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

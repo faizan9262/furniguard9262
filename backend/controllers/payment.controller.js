@@ -96,8 +96,13 @@ export const getAllPaymentList = async (req, res) => {
             },
           },
           {
-            path: "products", // full product docs
-            // you can also do select: "name price" if you only want some fields
+            path: "products",
+            select:"product",
+            populate:{
+              path:"product",
+              model:"Style",
+              select:"name"
+            }
           },
         ],
       })

@@ -38,7 +38,7 @@ const StyleSelectorCard = ({
     <div>
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Select Product</CardTitle>
+          <CardTitle>Style Your Space</CardTitle>
         </CardHeader>
         <CardContent>
           {tempSelectedProduct && (
@@ -47,7 +47,7 @@ const StyleSelectorCard = ({
               className="border my-4 p-4 rounded-xl bg-muted space-y-4"
             >
               <h2 className="text-center text-lg font-semibold text-primary sm:text-xl">
-                Product Preview
+                Style Preview
               </h2>
               <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 sm:gap-6">
                 <img
@@ -72,7 +72,7 @@ const StyleSelectorCard = ({
                         )
                       }
                     >
-                      View Full Product
+                      View Style
                     </Button>
                   </div>
                 </div>
@@ -84,7 +84,7 @@ const StyleSelectorCard = ({
             <div className="flex flex-col gap-3">
               {filteredProducts.length === 0 ? (
                 <div className="text-muted-foreground text-sm">
-                  No products available in this category.
+                  No Style available in this category.
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 max-h-[500px] overflow-y-auto pr-2">
@@ -123,7 +123,7 @@ const StyleSelectorCard = ({
                 <motion.div {...popIn}>
                   <Card className="w-full mt-6">
                     <CardHeader>
-                      <CardTitle>Added Products</CardTitle>
+                      <CardTitle>Styles Snapshots</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 gap-4">

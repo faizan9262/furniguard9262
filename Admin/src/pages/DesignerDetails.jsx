@@ -13,6 +13,7 @@ import {
   AvatarImage,
 } from "../components/components/ui/avatar";
 import { Star } from "lucide-react";
+import { Toast } from "react-toastify/dist/components";
 
 const sampleProjects = [
   {
@@ -74,15 +75,12 @@ const DesignerDetails = () => {
         const data = await getDesignerRating(id);
         setRating(data.data.map((d) => d));
       } catch (err) {
-        console.error("Failed to load designer rating:", err.message);
+        Toast.error("Failed to load designer rating");
       }
     };
     fetchRating();
   }, [id]);
 
-  
-
-  // console.log("Designer projects: ", DesignerContex.designers)
   const designerProjects = designer?.projects?.map((p) => p);
 
   if (!designer) return <p className="text-center mt-10">Designer not found</p>;

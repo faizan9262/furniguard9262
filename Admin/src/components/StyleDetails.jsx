@@ -53,7 +53,7 @@ const StyleDetails = () => {
         const data = await getProductRating(id);
         setRating(data.data);
       } catch (err) {
-        console.error("Failed to load product rating:", err.message);
+        toast.error("Failed to load product rating");
       }
     };
     fetchRating();

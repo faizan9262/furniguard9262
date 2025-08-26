@@ -69,7 +69,6 @@ const AdminNavbar = () => {
   const handleLogout = async () => {
     try {
       const response = await adminContext.adminLogout();
-      console.log("Response of logout: ", response);
       toast.success("Admin logged out successfully.");
       navigate("/login");
     } catch (error) {

@@ -5,10 +5,7 @@ import DesignerProfile from "@/components/DesignerProfile";
 
 const Profile = () => {
   const designer = useDesiner();
-  const currentDesigner = designer.currentDesigner
-
-  // console.log("Profile: ",currentDesigner);
-  
+  const currentDesigner = designer.currentDesigner  
 
   return (
     <>

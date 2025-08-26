@@ -47,8 +47,7 @@ const UpdatePassword = () => {
       });
       navigate("/reset-password");
     } catch (error) {
-      console.log(error);
-      toast.error(error.message, { id: "reset-password" });
+      toast.error("Something went wrong", { id: "reset-password" });
     }
   };
 

@@ -40,7 +40,6 @@ const DesignerProfile = () => {
 
   useEffect(() => {
     setProjects(designer?.projects);
-    // console.log("Projects : ",projects);
   }, [designer]);
 
   allAppointmentsOfUser?.forEach((ap) => {
@@ -68,8 +67,7 @@ const DesignerProfile = () => {
 
       toast.success("Profile Updated", { id: "update-profile" });
     } catch (error) {
-      console.log(error);
-      toast.error(error.message, { id: "update-profile" });
+      toast.error("Somwthing went wrong, try again.", { id: "update-profile" });
     }
   };
 
@@ -81,8 +79,7 @@ const DesignerProfile = () => {
       });
       navigate("/verify-email");
     } catch (error) {
-      console.log(error);
-      toast.error(error.message, { id: "otp" });
+      toast.error("Something went wrong try again", { id: "otp" });
     }
   };
 
@@ -93,7 +90,6 @@ const DesignerProfile = () => {
   };
 
   const designerProjects = projects;
-  // console.log("Project: ", designerProjects);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#faf5ef] to-[#ebdec8] py-12 px-4 flex flex-col items-center justify-center">

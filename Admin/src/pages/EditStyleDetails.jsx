@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAdmin } from "../context/AdminContext";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, replace } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Pencil, Loader2, XCircle, CheckCircle2 } from "lucide-react";
 import { Input } from "../components/components/ui/input";
@@ -8,7 +8,7 @@ import { Textarea } from "../components/components/ui/textarea";
 import { Button } from "../components/components/ui/button";
 import { Label } from "../components/components/ui/label";
 import { Card, CardContent } from "../components/components/ui/card";
-import { updateStyle } from "../helper/apis"; // ✅ Import here
+import { updateStyle } from "../helper/apis";
 import { toast } from "sonner";
 
 const EditStyleDetails = () => {
@@ -17,9 +17,6 @@ const EditStyleDetails = () => {
   const navigate = useNavigate();
 
   const product = list.find((p) => p._id === id);
-
-  console.log("Product : ",product.image);
-  
 
   const [formData, setFormData] = useState({
     name: product?.name || "",
@@ -47,9 +44,6 @@ const EditStyleDetails = () => {
     }
   };
 
-  console.log("File: ",formData.image);
-  
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -68,12 +62,9 @@ const EditStyleDetails = () => {
         )
       );
 
-        console.log("Resposne: ",response);
-
-      navigate(`/styles/${response.category}/${response._id}`);
+      navigate(`/styles/${response.category}/${response._id}`,{replace:true});
     } catch (err) {
       toast.error("Can't update this product, try again.", { id: "update" });
-      console.error(err);
     } finally {
       toast.success("Styles updated.", { id: "update" });
     }

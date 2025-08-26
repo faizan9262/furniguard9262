@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
 import adminAuth from "../middleware/adminAuth.js";
+import logger from "./logger.js";
 export const createToken = (id,email,expiresIn)=>{
     const payload = {id,email}
     const token = jwt.sign(payload,process.env.JWT_SECRET,{
@@ -11,7 +12,6 @@ export const createToken = (id,email,expiresIn)=>{
 export const verifyToken = async (req, res, next) => {
   try {
     const token = req.cookies['auth_cookie'];
-    console.log("User Token : ",token);
     
     
     if (!token || token.trim() === "") {
@@ -23,7 +23,7 @@ export const verifyToken = async (req, res, next) => {
     return next();
   } catch (err) {
     adminAuth(req, res, next);
-    console.error("Token verification failed:", err.message);
+    logger.error("Token verification failed:", err.message);
     return res.status(401).json({ message: "Token Expired or Invalid" });
   }
 };

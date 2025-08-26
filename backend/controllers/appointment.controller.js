@@ -4,6 +4,7 @@ import { Designer } from "../models/designer.model.js";
 import { Style } from "../models/styles.model.js";
 import { appointmentDeletedEmail } from "../utils/mailLayoutHtml.js";
 import { sendMail } from "../utils/sendmail.js";
+import logger from "../utils/logger.js";
 
 export const bookAppointment = async (req, res) => {
   try {
@@ -94,7 +95,7 @@ export const bookAppointment = async (req, res) => {
 
     res.status(201).json(populatedAppointment);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({
       message: "Something went wrong while booking the appointment.",
     });
@@ -139,12 +140,9 @@ export const getAllAppointmentsOfUser = async (req, res) => {
         },
       })
       .populate("products.product", "name description category image");
-
-    // console.log("1st AP: ", allAppointments);
-
     return res.status(200).json(allAppointments);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({
       message: "Something went wrong while fetching appointments.",
     });
@@ -158,9 +156,7 @@ export const getAllAppointmentsOfDesigner = async (req, res) => {
       return
     }
     const designerId = designerUser.designerProfile;
-    // console.log("Designer Id: ",designerId);
     const designer = await Designer.findById(designerId);
-    // console.log("Designer: ",designer);
 
     if (!designer) {
       return res.status(401).json({ message: "Designer not found." });
@@ -180,11 +176,9 @@ export const getAllAppointmentsOfDesigner = async (req, res) => {
       })
       .populate("products.product", "name description category image");
 
-    // console.log("APS: ",allAppointments);
-
     return res.status(200).json(allAppointments);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({
       message: "Something went wrong while fetching designer appointments.",
     });
@@ -212,7 +206,7 @@ export const updateStatusByAdminOnly = async (req, res) => {
       updatedAppointment: appointment,
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res
       .status(500)
       .json({ message: "Server error while updating appointment status" });
@@ -223,7 +217,6 @@ export const cancelAppointment = async (req, res) => {
   try {
     const { appointmentId, reason } = req.body;
     const user = await UserModel.findById(res.locals.jwtData.id);
-    // console.log(user._id.toString() , res.locals.jwtData.id);
 
     if (!appointmentId) {
       return res.status(401).json({ message: "Appointment not found" });
@@ -287,7 +280,7 @@ export const cancelAppointment = async (req, res) => {
 
     res.status(200).json({ message: "Appointment cancelled" });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res
       .status(500)
       .json({ message: "Server error while cancelling appointment" });
@@ -320,7 +313,6 @@ export const deleteAppointmentByAdmin = async (req, res) => {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    // ✅ Remove appointment from user and designer
     await UserModel.findByIdAndUpdate(appointment.user._id, {
       $pull: { appointments: appointmentId },
     });
@@ -331,10 +323,6 @@ export const deleteAppointmentByAdmin = async (req, res) => {
 
     const user = appointment.user;
     const designer = appointment.designer;
-
-    console.log("Appointment:", appointment);
-    // console.log("User Name:", user);
-    // console.log("Designer Name: ", designer.user.username);
 
     await Appointment.findByIdAndDelete(appointmentId);
 
@@ -358,7 +346,7 @@ export const deleteAppointmentByAdmin = async (req, res) => {
 
     res.status(200).json({ message: "Appointment Deleted by Admin" });
   } catch (error) {
-    console.error("Admin Delete Error:", error);
+    logger.error("Admin Delete Error:", error);
     res
       .status(500)
       .json({ message: "Server error while deleting appointment by admin" });

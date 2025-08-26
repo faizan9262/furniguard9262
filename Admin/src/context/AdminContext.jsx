@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   authStatus,
   getAllAppointments,
@@ -6,6 +12,7 @@ import {
   getProductsByPage,
 } from "../helper/apis.js";
 import axios from "axios";
+import { toast } from "sonner";
 
 export const AdminContex = createContext();
 
@@ -65,13 +72,10 @@ export const AdminContexProvider = (props) => {
     }
   };
 
-  console.log("Logged In: ", isLoggedIn);
-
   useEffect(() => {
     if (admin) {
       const checkAuth = async () => {
         const data = await authStatus();
-        // console.log("User Data:",data);
         if (data) {
           setAdmin({
             email: data.email,
@@ -99,23 +103,24 @@ export const AdminContexProvider = (props) => {
     const getAllDesignerFromDB = async () => {
       try {
         const data = await getAllDesigners();
-        console.log("Data:", data);
         setDesigners(data);
         if (data) {
           return;
         }
       } catch (error) {
-        console.log(error);
+        toast.error("Failed To Load Designers, Try again.");
       }
     };
     getAllDesignerFromDB();
   }, []);
 
-  const loadProducts = async () => {
+  const exclude = list.map((p) => p._id);
+
+  const loadProducts = useCallback(async () => {
     if (loading || !hasMore) return;
     setLoading(true);
     try {
-      const newProducts = await getProductsByPage(page);
+      const newProducts = await getProductsByPage(page, exclude);
       if (newProducts.length === 0) {
         setHasMore(false);
       } else {
@@ -123,10 +128,10 @@ export const AdminContexProvider = (props) => {
         setPage((prev) => prev + 1);
       }
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to load styles,try again.");
     }
     setLoading(false);
-  };
+  }, [page, hasMore, loading]);
 
   // initial load
   useEffect(() => {
@@ -134,35 +139,42 @@ export const AdminContexProvider = (props) => {
   }, []);
 
   // scroll listener
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-        document.body.offsetHeight - 500
-      ) {
-        loadProducts();
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, page]);
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (
+  //       window.innerHeight + window.scrollY >=
+  //       document.body.offsetHeight - 500
+  //     ) {
+  //       loadProducts();
+  //     }
+  //   };
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [loading, hasMore, page]);
 
   useEffect(() => {
-    // console.log("Designers: ",designers);
-    // console.log("List: ", list);
+    const handleScroll = () => {
+      const scrolled = window.scrollY + window.innerHeight;
+      const halfHeight = document.body.offsetHeight / 2;
+      if (scrolled >= halfHeight) loadProducts();
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loadProducts]);
+
+  useEffect(() => {
   }, [list]);
 
   useEffect(() => {
     const getAllAppointmentsOfUser = async () => {
       const data = await getAllAppointments();
-      // console.log("Data:", data);
       setAllAppointments(data);
     };
     getAllAppointmentsOfUser();
   }, []);
 
   useEffect(() => {
-    // console.log("Appointments Array:", allAppointments);
   }, []);
 
   const removeAppointment = (id) => {
@@ -184,7 +196,7 @@ export const AdminContexProvider = (props) => {
     setAllAppointments,
     isLoggedIn,
     adminLogout,
-    loading
+    loading,
   };
 
   return (

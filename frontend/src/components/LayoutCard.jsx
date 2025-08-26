@@ -45,8 +45,7 @@ const LayoutCard = ({
       setProjects(res.projects);
       toast.success("Project deleted successfully", { id: "project-delete" });
     } catch (error) {
-      console.log(error);
-      toast.error(error.message, { id: "project-delete" });
+      toast.error("Failed to delete project", { id: "project-delete" });
     }
   };
 

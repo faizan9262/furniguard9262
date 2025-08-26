@@ -17,7 +17,6 @@ const StyleCard = ({
     try {
       toast.loading("Adding to Wishlist", { id: "wishlist" });
       const data = await addToWishlist(id);
-      console.log("Data: ", data);
       toast.success("Successfully added to your Wishlist", { id: "wishlist" });
     } catch (error) {
       toast.error(error?.message || "Verification failed", { id: "wishlist" });

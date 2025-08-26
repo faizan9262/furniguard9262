@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAdmin } from "../context/AdminContext";
 import { Button } from "@/components/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 const ChatBox = () => {
   const { senderId, receiverId } = useParams();
@@ -29,7 +30,7 @@ const ChatBox = () => {
         const res = await axios.get(`/message/convo/${senderId}/${receiverId}`);
         setMessages(res.data);
       } catch (err) {
-        console.error("❌ Failed to fetch conversation:", err);
+        toast.error("Failed to fetch conversation:", err);
       }
     };
 

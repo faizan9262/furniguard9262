@@ -48,7 +48,6 @@ const Register = () => {
       toast.success("Signed up successfully!", { toastId: "signup" });
       navigate("/");
     } catch (error) {
-      console.log(error);
       toast.error(error.message || "Something went wrong while signing up");
     }
   };

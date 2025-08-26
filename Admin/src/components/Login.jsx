@@ -38,18 +38,14 @@ const AdminLogin = () => {
       const response = await adminContext.adminLogin(email, password);
 
       toast.success("Login successful", { id: "admin-login" });
-      console.log("Admin login success:", response.data);
+      toast.log("Admin login success:", response.data);
       navigate("/");
     } catch (err) {
-      console.error("Admin login failed:", err);
-      const message = err?.data?.message || "Login failed";
-      toast.error(message, { id: "admin-login" });
+      toast.error("Admin login failed:", {id: "admin-login" });
     }
   };
 
   useEffect(()=>{
-    console.log("Leggedin Status: ",adminContext.isLoggedIn);
-    
     adminContext.isLoggedIn && navigate('/')
   },[adminContext.isLoggedIn])
 

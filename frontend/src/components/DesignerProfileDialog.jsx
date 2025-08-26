@@ -87,13 +87,11 @@ export default function EditDesignerProfileDialog() {
     try {
       toast.loading("Updating Your Profile", { id: "update-designer" });
       const res = await editDesignerProfile(formData);
-      //   console.log("Response: ",res);
       toast.success("Profile updated successfully", { id: "update-designer" });
       designersContext?.setCurrentDesigners([res]);
       setOpen(false);
     } catch (err) {
       toast.error("Failed to update profile", { id: "update-designer" });
-      console.error(err);
     }
   };
 

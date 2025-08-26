@@ -49,11 +49,6 @@ export default function RateComponent({ currentAppointment }) {
   const [productRatings, setProductRatings] = useState({});
   const [productFeedbacks, setProductFeedbacks] = useState({});
 
-  console.log("Products Feedback: ", productFeedbacks);
-  console.log("Products rating: ", productRatings);
-  console.log("Designer rating: ", designerRating);
-  console.log("Designer feedback: ", feedback);
-
   const handleProductRatingChange = (productId, rating) => {
     setProductRatings((prev) => ({
       ...prev,

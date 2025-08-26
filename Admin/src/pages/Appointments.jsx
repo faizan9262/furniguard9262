@@ -47,9 +47,6 @@ const Appointments = () => {
     (a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate)
   );
 
-  console.log("All APs: ", allAppointments);
-  console.log("Reason: ", reason);
-
   const filteredAppointments = allAppointments
     .filter((item) => {
       return statusFilter === "all" || item.status === statusFilter;
@@ -64,10 +61,6 @@ const Appointments = () => {
       );
     });
 
-  console.log("Filtered Appointments:", filteredAppointments);
-
-  // console.log("Search Query: ",searchQuery);
-
   const handleCancelAppointment = async (apId, reason) => {
     try {
       toast.loading("Canceling Your Appointment", { id: "cancel-ap" });
@@ -76,7 +69,6 @@ const Appointments = () => {
       appointments.setAllAppointments(prev => prev.filter(ap => ap._id !== apId));
       navigate("/appointments");
     } catch (error) {
-      console.error(error);
       toast.error(error.message || "Something went wrong", { id: "cancel-ap" });
     }
   };

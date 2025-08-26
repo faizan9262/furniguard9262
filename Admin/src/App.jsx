@@ -32,17 +32,6 @@ function App() {
 
   // Socket connections
   useEffect(() => {
-    const handleConnect = () => {
-      console.log("Connected with ID:", adminSocket.id);
-    };
-    const handleDisconnect = () => {
-      console.log("Disconnected from socket");
-    };
-    const handleReceive = (msg) => {
-      console.log("Recoved msg: ", msg);
-      adminContext.setMessages((prev) => [...prev, msg]);
-    };
-
     adminSocket.on("connect", handleConnect);
     adminSocket.on("disconnect", handleDisconnect);
     adminSocket.on("receive-message", handleReceive);
@@ -56,7 +45,6 @@ function App() {
 
   useEffect(() => {
     adminSocket.emit("join", adminContext?.admin?.role);
-    console.log("Role in admin: ", adminContext?.admin?.role);
   }, [adminContext?.admin]);
 
   return (

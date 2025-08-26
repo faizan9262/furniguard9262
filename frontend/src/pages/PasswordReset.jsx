@@ -38,7 +38,6 @@ const PasswordReset = () => {
       toast.success("Password reset successfully", { id: "reset" });
       auth.user ? navigate("/profile") : navigate('/login')
     } catch (error) {
-      console.error(error);
       toast.error(error.message || "Something went wrong", { id: "reset" });
     }
   };

@@ -51,9 +51,6 @@ const AddProduct = () => {
         { withCredentials: true }
       );
 
-      console.log("Response: ",response);
-      
-
       if (response.data.success) {
         toast.success("Style added successfully", { id: "addProduct" });
         setName("");
@@ -64,7 +61,6 @@ const AddProduct = () => {
         toast.error(response.data.message, { id: "addProduct" });
       }
     } catch (error) {
-      console.log(error);
       toast.error("Something went wrong while adding style.", {
         id: "addProduct",
       });

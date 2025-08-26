@@ -17,31 +17,23 @@ export const AppointmentsContexProvider = (props) => {
     if (auth.isLoggedIn) {
       const getAllAppointmentsOfUser = async () => {
         const data = await getAllAppointments();
-        // console.log("Ap Data:",data);
         setAllAppointments(data);
       };
       getAllAppointmentsOfUser();
     }
   }, [auth.isLoggedIn]);
 
-  useEffect(() => {
-    // console.log("User Aoopintments Array:",allAppointments);
-  }, [allAppointments]);
 
   useEffect(() => {
     if (auth.isLoggedIn) {
       const getAppointmentsOfDesigner = async () => {
         const data = await getAllAppointmentsOfDesigner();
-        console.log("Ap Data Designer:", data);
         setDesignerAllAppointmentsOfDesigner(data);
       };
       getAppointmentsOfDesigner();
     }
   }, [auth.isLoggedIn]);
 
-  useEffect(() => {
-    // console.log("Aoopintments Array Designer:",DesignerAllAppointments);
-  }, [DesignerAllAppointments]);
 
   const removeAppointment = (id) => {
     setAllAppointments((prev) =>

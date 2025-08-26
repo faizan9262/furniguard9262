@@ -73,9 +73,6 @@ const AppointmentDetailPage = () => {
     (ap) => ap._id === id
   );
 
-  console.log("Current ID: ", currentAppointment?._id);
-  console.log("Current Status: ", newStatus);
-
   const handleCancelAppointment = async () => {
     try {
       toast.loading("Canceling Your Appointment", { id: "cancel-ap" });
@@ -84,8 +81,7 @@ const AppointmentDetailPage = () => {
       appointment.removeAppointment(currentAppointment._id);
       navigate("/appointments");
     } catch (error) {
-      console.error(error);
-      toast.error(error.message || "Something went wrong", { id: "cancel-ap" });
+      toast.error(error.message || "Something went wrong while cancelling Appointment", { id: "cancel-ap" });
     }
   };
 
@@ -93,13 +89,11 @@ const AppointmentDetailPage = () => {
     try {
       toast.loading("Updating status...", { id: "update-status" });
       const res = await updateStatus(newStatus, currentAppointment._id);
-      console.log("Data from update status: ", res);
       currentAppointment.status = res?.updatedAppointment?.status;
       toast.success("Status updated successfully", { id: "update-status" });
       setOpenEditDialog(false);
     } catch (err) {
-      toast.error("Failed to update status", { id: "update-status" });
-      console.error(err);
+      toast.error("Failed to update status", { id: "update-status"})
     }
   };
 
@@ -459,7 +453,7 @@ const AppointmentDetailPage = () => {
               <img
                 src={prod.product.image}
                 alt={prod.product.name}
-                className="rounded-xl w-full h-[200px] object-cover"
+                className="rounded-xl w-full h-[300px] object-cover"
               />
               <p className="text-sm mt-4 leading-relaxed text-gray-500 line-clamp-3">
                 {prod.product.description}
@@ -467,18 +461,6 @@ const AppointmentDetailPage = () => {
             </CardContent>
           </Card>
         ))}
-      </div>
-      <div className="bg-primary/20 my-8 text-primary border-l-[6px] border-primary dark:border-yellow-500/40 px-4 py-3 rounded-lg text-sm">
-        <p className="font-medium">Note:</p>
-        <p>
-          You cannot modify or update this appointment. In case of any mistake,
-          please
-          <span className="font-semibold text-red-600 dark:text-red-400">
-            {" "}
-            cancel{" "}
-          </span>
-          this appointment and create a new one.
-        </p>
       </div>
     </div>
   );

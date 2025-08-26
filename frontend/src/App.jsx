@@ -31,15 +31,12 @@ import Styles from "./pages/Styles.jsx";
 function App() {
   const auth = useAuth();
   const location = useLocation();
-  // console.log("Role:", auth?.user?.role);
 
   useEffect(() => {
     const handleConnect = () => {
-      console.log("Connected with ID:", socket.id);
     };
 
     const handleDisconnect = () => {
-      console.log("Disconnected from socket");
     };
 
     socket.on("connect", handleConnect);
@@ -55,7 +52,6 @@ function App() {
     if (auth?.user?.id) {
       socket.emit("join", auth?.user?.id);
     }
-    console.log("Joined: ");
   }, [auth?.user?.id]);
 
   const hideNavbar = location.pathname.startsWith("/chat/");

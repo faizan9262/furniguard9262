@@ -57,8 +57,6 @@ export default function AddProjectDialog({
 
       const res = await addProject(formdata);
 
-      console.log("Res: ", res);
-
       toast.success("Project added successfully", { id: "add-project" });
       setProjects(res);
       // Reset state
@@ -70,14 +68,11 @@ export default function AddProjectDialog({
       setImages([]);
       setPreviews([]);
     } catch (error) {
-      console.error(error);
       toast.error("Failed to add project", { id: "add-project" });
     } finally {
       setLoading(false);
     }
   };
-
-  // console.log("Projects in Dialog: ", designerProjects);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

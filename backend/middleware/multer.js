@@ -1,6 +1,7 @@
 import multer from "multer";
 import streamifier from "streamifier";
 import pkg from "cloudinary";
+import logger from "../utils/logger.js";
 const { v2: cloudinary } = pkg;
 
 const storage = multer.memoryStorage();
@@ -66,7 +67,7 @@ export const uploadToCloudinary = (folder = "Melodify") => {
         return next();
       }
     } catch (err) {
-      console.error("Cloudinary Upload Error:", err);
+      logger.error("Cloudinary Upload Error:", err);
       return res.status(500).json({ message: "Upload error" });
     }
   };

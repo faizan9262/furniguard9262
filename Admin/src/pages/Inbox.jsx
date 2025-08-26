@@ -9,6 +9,7 @@ import { FaDotCircle } from "react-icons/fa";
 import { useAdmin } from "../context/AdminContext";
 import adminSocket from "../adminSocket";
 import { Input } from "@/components/components/ui/input";
+import { toast } from "sonner";
 
 const Inbox = () => {
   const adminConetext = useAdmin();
@@ -46,9 +47,8 @@ const Inbox = () => {
       try {
         const response = await getAdminInbox(userRole, userId);
         setChats(response);
-        console.log("Fetched chats:", response);
       } catch (error) {
-        console.error("Error fetching chats:", error);
+        toast.error("Failed to fetching chats");
       } finally {
         setLoading(false);
       }
@@ -127,7 +127,6 @@ const Inbox = () => {
         partnerId: person?._id,
         lastRead: new Date(),
       });
-      // console.log("Updated Response: ", response);
       const status = response.data;
       navigate(
         `/chats/${person?._id}/${userRole === "admin" ? "designer" : "user"}`,
@@ -143,12 +142,10 @@ const Inbox = () => {
         }
       );
     } catch (error) {
-      console.log(error);
+      toast.log("Failed to update read status");
     }
   };
 
-  // console.log("Chats: ", chats);
-  // console.log("Auth use: ", auth?.user);
 
   return (
     <div className="">

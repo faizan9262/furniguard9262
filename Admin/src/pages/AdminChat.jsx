@@ -7,6 +7,7 @@ import { Button } from "@/components/components/ui/button.jsx";
 import { useAdmin } from "../context/AdminContext.jsx";
 import adminSocket from "../adminSocket.js";
 import { fetchMessages } from "../helper/apis.js";
+import { toast } from "sonner";
 
 const AdminChat = () => {
   const { receiverId, receiverRole } = useParams();
@@ -26,8 +27,6 @@ const AdminChat = () => {
 
   const adminContext = useAdmin();
   const from = adminContext?.admin?.id;
-
-  console.log("Reciver Id", receiverRole);
 
   const fromModel =
     adminContext?.admin?.role === "designer" ? "Designer" : "UserModel";
@@ -65,7 +64,7 @@ const AdminChat = () => {
         const res = await fetchMessages(from, receiverId);
         setMessages(res);
       } catch (err) {
-        console.error("❌ Failed to fetch conversation:", err);
+        toast.error("ailed to fetch conversation");
       }
     };
 
@@ -73,7 +72,7 @@ const AdminChat = () => {
   }, [from, receiver]);
 
   useEffect(() => {
-    // console.log("Messages updated:", messages);
+
   }, [messages]);
 
   useEffect(() => {
@@ -90,7 +89,7 @@ const AdminChat = () => {
             lastRead: new Date(),
           });
         } catch (err) {
-          console.error("❌ Failed to update read status in ChatBox", err);
+          toast.error("Failed to update read status in ChatBox");
         }
       };
 
@@ -119,9 +118,6 @@ const AdminChat = () => {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    console.log("From model: ",fromModel);
-    console.log("To model: ",toModel);
-    
 
     const newMessage = {
       from,
@@ -143,8 +139,6 @@ const AdminChat = () => {
 
   useEffect(() => {
     adminSocket.on("typing", ({ from: typingUser }) => {
-      console.log("Typing User: ", typingUser);
-      console.log("Reciver User: ", receiverId);
 
       if (typingUser === receiverId) setPartnerTyping(true);
     });
@@ -158,10 +152,6 @@ const AdminChat = () => {
       adminSocket.off("stop-typing");
     };
   }, [receiverId]);
-
-
-  // console.log("Reciver: ",receiver);s
-  
 
   return (
     <div className="fixed inset-0 top-0 flex flex-col bg-white">

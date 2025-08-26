@@ -12,14 +12,6 @@ const Header = () => {
   const navigate = useNavigate();
   const auth = useAuth();
 
-  const handleClick = async (amount) => {
-    try {
-      const data = await checkOutPayment(amount);
-      // console.log("Data: ", data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <div

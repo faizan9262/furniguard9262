@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
+import logger from "../utils/logger.js";
 
 const adminAuth = async (req, res, next) => {
   try {
     const token = req.cookies["admin_cookie"];
-    // console.log("Admin token from cookie:", token);
 
     if (!token) {
       return res.status(401).json({
@@ -20,7 +20,7 @@ const adminAuth = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error("Admin auth error:", error.message);
+    logger.error("Admin auth error:", error.message);
 
     return res.status(401).json({
       success: false,

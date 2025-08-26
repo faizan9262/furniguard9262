@@ -52,7 +52,7 @@ export const updateStyle = async (id, name, description, category, image) => {
 
     return response.data;
   } catch (error) {
-    console.error("Error updating style:", error);
+    logger.error("Error updating style:", error);
     throw error;
   }
 };
@@ -61,9 +61,16 @@ export const updateStyle = async (id, name, description, category, image) => {
 
 // Products Apis
 
-export const getProductsByPage = async (page) => {
-  const response = await axios.get(`/products/list?page=${page}&limit=20`);
+export const getProductsByPage = async (page, excludeIds = []) => {
+  const query = new URLSearchParams({
+    page: page,
+    limit: 20,
+    exclude: excludeIds.join(","), // Pass previously loaded IDs
+  });
+
+  const response = await axios.get(`/products/user-list?${query.toString()}`);
   if (response.status !== 200) throw new Error("Unable to Load Products");
+
   return response.data.ratedProducts;
 };
 
@@ -118,7 +125,6 @@ export const getAdminInbox = async (userRole, userId) => {
 
 export const fetchMessages = async (from, receiverId) => {
   const response = await axios.get(`/message/convo/${from}/${receiverId}`);
-  // console.log("Response: ",response.data);s
   if (response.status !== 200) {
     throw new Error("Unable To Load Messages");
   }

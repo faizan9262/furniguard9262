@@ -8,6 +8,7 @@ import { getUserInbox } from "../helper/api-communicator.js";
 import axios from "axios";
 import { FaDotCircle } from "react-icons/fa";
 import socket from "../socket";
+import { toast } from "sonner";
 
 const Inbox = () => {
   const auth = useAuth();
@@ -45,9 +46,8 @@ const Inbox = () => {
       try {
         const response = await getUserInbox(userRole, userId);
         setChats(response);
-        console.log("Fetched chats for last read:", response);
       } catch (error) {
-        console.error("Error fetching chats:", error);
+        toast.error("Failed to fetch chats");
       } finally {
         setLoading(false);
       }
@@ -126,7 +126,6 @@ const Inbox = () => {
         partnerId: person?._id,
         lastRead: new Date(),
       });
-      // console.log("Updated Response: ", response);
       const status = response.data;
       navigate(
         `/chat/${person?._id}/${userRole === "user" ? "designer" : "user"}`,
@@ -142,12 +141,9 @@ const Inbox = () => {
         }
       );
     } catch (error) {
-      console.log(error);
+      toast.log("Failed to update read status");
     }
   };
-
-  // console.log("Chats: ", chats);
-  // console.log("Auth use: ", auth?.user);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#faf5ef] to-[#e9dfd2] py-10 px-4">

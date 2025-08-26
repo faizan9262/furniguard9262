@@ -2,6 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { Style } from "../models/styles.model.js";
 import { Rating } from "../models/rating.model.js";
 import mongoose from "mongoose";
+import logger from "../utils/logger.js";
 
 const addProduct = async (req, res) => {
   try {
@@ -67,31 +68,22 @@ const updateStyles = async (req, res) => {
 
     res.status(200).json(product);
   } catch (error) {
-    console.error("Error updating product:", error);
+    logger.error("Error updating product:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
 const listProducts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
     const limit = 20;
+    const exclude = req.query.exclude ? req.query.exclude.split(",") : [];
 
-    const categories = await Style.distinct("category"); // get all categories
-    const limitPerCategory = Math.ceil(limit / categories.length);
+    const products = await Style.aggregate([
+      { $match: { _id: { $nin: exclude.map(id => new mongoose.Types.ObjectId(id)) } } },
+      { $sample: { size: limit } }
+    ]);
 
-    let products = [];
-
-    for (const cat of categories) {
-      const catProducts = await Style.find({ category: cat })
-        .skip((page - 1) * limitPerCategory)
-        .limit(limitPerCategory)
-        .lean();
-      products.push(...catProducts);
-    }
-
-    products = products.sort(() => Math.random() - 0.5);
-    const productIds = products.map((p) => p._id);
+    const productIds = products.map(p => p._id);
     const stats = await Rating.aggregate([
       { $match: { targetType: "style", targetId: { $in: productIds } } },
       {
@@ -103,49 +95,41 @@ const listProducts = async (req, res) => {
       },
     ]);
 
-    const statsMap = {};
-    stats.forEach((stat) => {
-      statsMap[stat._id.toString()] = stat;
-    });
-
-    const ratedProducts = products.map((product) => ({
-      ...product,
-      averageRating: statsMap[product._id.toString()]?.averageRating || 0,
-      totalRatings: statsMap[product._id.toString()]?.totalRatings || 0,
+    const statsMap = Object.fromEntries(stats.map(s => [s._id.toString(), s]));
+    const ratedProducts = products.map(p => ({
+      ...p,
+      averageRating: statsMap[p._id.toString()]?.averageRating || 0,
+      totalRatings: statsMap[p._id.toString()]?.totalRatings || 0,
     }));
 
     res.status(200).json({ success: true, ratedProducts });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Something went wrong while fetching products details.",
-    });
+    logger.error(error);
+    res.status(500).json({ message: "Error fetching products." });
   }
 };
+
 
 export const getHomeProducts = async (req, res) => {
   try {
     const { categories, limit } = req.query;
 
     if (!categories) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Categories are required" });
+      return res.status(400).json({ success: false, message: "Categories are required" });
     }
 
     const categoryList = categories.split(",");
-    const limitPerCategory = limit ? parseInt(limit) : 0; // 0 means no limit
+    const limitPerCategory = limit ? parseInt(limit) : 10;
 
-    // Fetch products for each category
     const results = await Promise.all(
-      categoryList.map(async (category) => {
-        const query = Style.find({ category }).lean();
-        if (limitPerCategory > 0) query.limit(limitPerCategory);
-        return query;
-      })
+      categoryList.map((category) =>
+        Style.find({ category }, "_id name image description")
+          .sort({ createdAt: -1 }) // newest first
+          .limit(limitPerCategory)
+          .lean()
+      )
     );
 
-    // Flatten the nested arrays into a single array
     const flattenedResults = results.flat();
 
     res.status(200).json({
@@ -153,10 +137,11 @@ export const getHomeProducts = async (req, res) => {
       data: flattenedResults,
     });
   } catch (error) {
-    console.error("Error fetching home products:", error);
+    logger.error("Error fetching home products:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
 
 const removeProduct = async (req, res) => {
   try {
@@ -166,7 +151,7 @@ const removeProduct = async (req, res) => {
       message: "Product Removed",
     });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.json({
       success: false,
       message: error.message,
@@ -183,7 +168,7 @@ const signleProduct = async (req, res) => {
       singleProduct,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.json({
       success: false,
       message: error.message,

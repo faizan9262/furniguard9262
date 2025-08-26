@@ -1,5 +1,6 @@
 import axios from "axios";
 import { assets } from "../assets/assets";
+import { toast } from "sonner";
 
 export const loginUser = async (email, password) => {
   try {
@@ -226,9 +227,16 @@ export const getProductRating = async (productId) => {
 
 // Products Apis
 
-export const getProductsByPage = async (page) => {
-  const response = await axios.get(`/products/user-list?page=${page}&limit=20`);
+export const getProductsByPage = async (page, excludeIds = []) => {
+  const query = new URLSearchParams({
+    page: page,
+    limit: 20,
+    exclude: excludeIds.join(","), // Pass previously loaded IDs
+  });
+
+  const response = await axios.get(`/products/user-list?${query.toString()}`);
   if (response.status !== 200) throw new Error("Unable to Load Products");
+
   return response.data.ratedProducts;
 };
 
@@ -333,7 +341,6 @@ export const getUserInbox = async (userRole, userId) => {
 
 export const fetchMessages = async (from, receiverId) => {
   const response = await axios.get(`/message/convo/${from}/${receiverId}`);
-  // console.log("Response: ",response.data);s
   if (response.status !== 200) {
     throw new Error("Unable To Load Messages");
   }
@@ -346,7 +353,6 @@ export const checkOutPayment = async (amount,appointmentId) => {
 
   const { data: order } = await axios.post('/payment/checkout', { amount });
 
-  console.log("🧾 Order generated:", order); // This is BEFORE payment
 
   const options = {
     key,
@@ -379,18 +385,18 @@ export const checkOutPayment = async (amount,appointmentId) => {
         });
 
         if (verifyRes.data.success) {
-          window.location.href = `/payment-success?reference=${verifyRes.data.reference}&appointment-id=${verifyRes.data.appointment}`;
+          window.location.href = `/appointments`;
         } else {
-          alert("❌ Payment verification failed: Invalid signature");
+          alert("Payment verification failed: Invalid signature");
         }
       } catch (err) {
-        console.error("❌ Payment verification failed:", err.response?.data || err.message);
-        alert("❌ Payment verification failed");
+        toast.error("Payment verification failed:", err.response?.data || err.message);
+        alert("Payment verification failed");
       }
     },
     modal: {
       ondismiss: function () {
-        console.log("❌ Payment popup dismissed by user");
+        toast.info("Payment popup dismissed");
       }
     }
   };

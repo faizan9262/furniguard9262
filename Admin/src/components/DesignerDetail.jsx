@@ -9,6 +9,7 @@ import { useDesiner } from "../context/DesignerContex";
 import { getDesignerRating } from "../helper/api-communicator.js";
 import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
 import { Star } from "lucide-react";
+import { toast } from "sonner";
 
 const sampleProjects = [
   {
@@ -70,13 +71,11 @@ const DesignerDetail = () => {
         const data = await getDesignerRating(id);
         setRating(data.data.map((d) => d));
       } catch (err) {
-        console.error("Failed to load designer rating:", err.message);
+        toast.error("Failed to load designer rating");
       }
     };
     fetchRating();
   }, [id]);
-
-  console.log("Rating length: ",rating.length);
   
 
   if (!designer) return <p className="text-center mt-10">Designer not found</p>;

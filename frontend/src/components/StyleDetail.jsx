@@ -38,7 +38,6 @@ const StyleDetail = () => {
   }, []);
 
   const products = product.products.find((p) => p._id === id) || product.livingroom.find((p)=> p._id == id) || product.stairs.find((p)=> p._id == id) || product.layout.find((p)=> p._id == id)  ;
-  console.log("Products: ",products);
   
   const relatedProducts = product.products.filter(
     (p) => p.category === products.category
@@ -50,7 +49,7 @@ const StyleDetail = () => {
         const data = await getProductRating(id);
         setRating(data.data.map((d) => d));
       } catch (err) {
-        console.error("Failed to load product rating:", err.message);
+        toast.error("Failed to load product rating");
       }
     };
     fetchRating();
@@ -64,7 +63,6 @@ const StyleDetail = () => {
     try {
       toast.loading("Adding to Wishlist", { id: "p-details" });
       const data = await addToWishlist(productId);
-      console.log("Data: ", data);
       toast.success("Successfully added to your Wishlist", { id: "p-details" });
     } catch (error) {
       toast.error(error?.message || "Verification failed", { id: "p-details" });

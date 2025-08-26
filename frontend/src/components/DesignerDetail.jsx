@@ -13,6 +13,7 @@ import { useAuth } from "../context/AuthContext";
 import { IoLogoWhatsapp } from "react-icons/io";
 import { FaWhatsapp } from "react-icons/fa6";
 import { MdMessage } from "react-icons/md";
+import { toast } from "sonner";
 
 const DesignerDetail = () => {
   const { id } = useParams();
@@ -21,7 +22,6 @@ const DesignerDetail = () => {
   const navigate = useNavigate();
   const DesignerContex = useDesiner();
   const designer = DesignerContex.designers.find((d) => d._id === id);
-  // console.log("Designer: ", designer);
 
   const [rating, setRating] = useState({});
 
@@ -47,16 +47,14 @@ const DesignerDetail = () => {
         const data = await getDesignerRating(id);
         setRating(data.data.map((d) => d));
       } catch (err) {
-        console.error("Failed to load designer rating:", err.message);
+        toast.error("Failed to load designer rating");
       }
     };
     fetchRating();
   }, [id]);
 
-  // console.log("Rating length: ",rating.length);
   const designerProjects = designer?.projects.map((p) => p);
 
-  // console.log("Projects: ", designerProjects);
 
   if (!designer) return <p className="text-center mt-10">Designer not found</p>;
 

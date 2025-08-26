@@ -1,5 +1,6 @@
 import { Style } from "../models/styles.model.js";
 import { UserModel } from "../models/user.model.js";
+import logger from "../utils/logger.js";
 
 export const addToWishlist = async (req, res) => {
   try {
@@ -36,7 +37,7 @@ export const addToWishlist = async (req, res) => {
       wishlist: user.wishlist,
     });
   } catch (error) {
-    console.error("Error in addToWishlist:", error);
+    logger.error("Error in addToWishlist:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -59,7 +60,7 @@ export const getAllWishlistProducts = async (req, res) => {
 
     res.status(200).json({products});
   } catch (error) {
-    console.error("Error in addToWishlist:", error);
+    logger.error("Error in addToWishlist:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -89,7 +90,7 @@ export const removeFromWishlist = async (req, res) => {
       wishlist: user.wishlist,
     });
   } catch (error) {
-    console.error("Error in removeFromWishlist:", error);
+    logger.error("Error in removeFromWishlist:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

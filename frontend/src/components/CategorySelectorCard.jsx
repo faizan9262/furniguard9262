@@ -24,7 +24,7 @@ const CategorySelectorCard = ({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-base sm:text-lg">Select Product Category</CardTitle>
+        <CardTitle className="text-base sm:text-lg">Select Category of Any Style</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-3 sm:gap-4 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">

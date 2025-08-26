@@ -11,6 +11,7 @@ import {
 } from "../components/components/ui/select";
 import { motion } from "framer-motion";
 import { Loader2, Search } from "lucide-react";
+import { toast } from "sonner";
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
@@ -24,15 +25,13 @@ const Payments = () => {
         const response = await allPayments();
         setPayments(response);
       } catch (error) {
-        console.error("Error fetching payments:", error);
+        toast.error("Failed fetching payments");
       } finally {
         setLoading(false);
       }
     };
     getAllPayments();
   }, []);
-
-  console.log("Payments: ",payments);
   
   // Filter & sort payments
   const filteredPayments = useMemo(() => {
@@ -116,7 +115,7 @@ const Payments = () => {
               const designer = payment?.appointment?.designer?.user;
               const products = payment?.appointment?.products || [];
               const amount = 500 + (500 * 18) / 100; // example calc
-
+              
               return (
                 <motion.div
                   key={payment._id || index}

@@ -7,6 +7,7 @@ import { Textarea } from "@/components/components/ui/textarea.jsx";
 import { ArrowLeft, SendHorizontal } from "lucide-react";
 import { fetchMessages } from "../helper/api-communicator.js";
 import { Button } from "@/components/components/ui/button.jsx";
+import { toast } from "sonner";
 
 const ChatBox = () => {
   const [input, setInput] = useState("");
@@ -62,18 +63,12 @@ const ChatBox = () => {
         const res = await fetchMessages(from, receiverId);
         setMessages(res);
       } catch (err) {
-        console.error("❌ Failed to fetch conversation:", err);
+        toast.error("Failed to fetch conversation:", err);
       }
     };
 
     fetchMessagesForUser();
   }, [from, receiver]);
-
-  useEffect(() => {
-    // console.log("Messages updated:", messages);
-    // console.log("Msg From: ", messages.slice(-1)[0]?.from);
-    // console.log("Auth user: ", auth?.user?.id);
-  }, [messages]);
 
   useEffect(() => {
     if (!messages.length || !from || !receiverId) return;
@@ -89,7 +84,7 @@ const ChatBox = () => {
             lastRead: new Date(),
           });
         } catch (err) {
-          console.error("❌ Failed to update read status in ChatBox", err);
+          toast.error("Failed to update read status in ChatBox", err);
         }
       };
 
@@ -140,8 +135,6 @@ const ChatBox = () => {
 
   useEffect(() => {
     socket.on("typing", ({ from: typingUser }) => {
-      console.log("Typing User: ", typingUser);
-      console.log("Reciver User: ", receiverId);
 
       if (typingUser === receiverId) setPartnerTyping(true);
     });

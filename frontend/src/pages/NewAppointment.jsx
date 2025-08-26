@@ -140,12 +140,12 @@ const NewAppointment = () => {
         addProductToList={(prod) => {
           if (!selectedProducts.find((p) => p._id === prod._id)) {
             setSelectedProducts((prev) => [...prev, prod]);
-            toast.success("Product Added, See preview Below");
+            toast.success("Style Selected, See preview Below");
           }
         }}
         removeProductFromList={(id) => {
           setSelectedProducts((prev) => prev.filter((p) => p._id !== id));
-          toast.success("Product Removed");
+          toast.success("Style Removed");
         }}
         selectedProducts={selectedProducts}
       />

@@ -1,5 +1,6 @@
 import { Rating } from "../models/rating.model.js";
 import { UserModel } from "../models/user.model.js";
+import logger from "../utils/logger.js";
 
 export const rateItem = async (req, res) => {
   try {
@@ -63,7 +64,7 @@ export const rateItem = async (req, res) => {
       })),
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({
       message: "Something went wrong while submitting ratings",
     });

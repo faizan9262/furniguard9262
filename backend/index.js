@@ -17,6 +17,7 @@ import Razorpay from "razorpay";
 import paymentRouter from "./routes/payment.routes.js";
 import helmet from "helmet"
 import { authLimiter } from "./utils/limiter.js";
+import logger from "./utils/logger.js";
 
 dotevn.config();
 
@@ -69,9 +70,7 @@ app.use("/api/payment", paymentRouter);
 
 const port = process.env.PORT || 5000;
 httpServer.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  //   console.log('SMTP_USER:', process.env.SMTP_USER);
-  // console.log('SMTP_PASS:', process.env.SMTP_PASS);
+  logger.info(`Server running on port ${port}`);
 });
 
 export default app;
