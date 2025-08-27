@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-const adminSocket = io("http://localhost:3000", {
+const adminSocket = io("https://furniguard9262-production.up.railway.app", {
   withCredentials: true,
   autoConnect: true,
 });

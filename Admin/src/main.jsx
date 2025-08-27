@@ -6,7 +6,7 @@ import { AdminContexProvider } from "./context/AdminContext.jsx";
 import axios from "axios";
 import { Toaster } from "sonner";
 
-axios.defaults.baseURL = "http://localhost:3000/api";
+axios.defaults.baseURL = "https://furniguard9262-production.up.railway.app/api";
 axios.defaults.withCredentials = true;
 
 createRoot(document.getElementById("root")).render(
