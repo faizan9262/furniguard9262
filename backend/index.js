@@ -15,8 +15,7 @@ import { initSocket } from "./socket/socket.js";
 import messageRouter from "./routes/message.route.js";
 import Razorpay from "razorpay";
 import paymentRouter from "./routes/payment.routes.js";
-import helmet from "helmet";
-import { authLimiter } from "./utils/limiter.js";
+// import helmet from "helmet";
 import logger from "./utils/logger.js";
 
 dotenv.config();
@@ -53,7 +52,7 @@ await mongoDBConnect();
 conntectCloadinary();
 app.use(express.json());
 app.use(cookieParser());
-app.use(helmet());
+// app.use(helmet());
 
 app.get("/", (req, res) => {
   res.send("Welcome to Furniguard APIs");
