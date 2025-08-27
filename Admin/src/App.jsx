@@ -1,4 +1,4 @@
-import { replace, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import Appointments from "./pages/Appointments";
 import Navbar from "./components/Navbar";
@@ -25,10 +25,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   const adminContext = useAdmin();
   const location = useLocation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const hideNavbar =
-    location.pathname.startsWith("/chat/") ||
+    !adminContext.isLoggedIn && (location.pathname.startsWith("/chat/")) ||
     location.pathname.startsWith("/chats/");
 
   // Socket connections
@@ -64,11 +64,14 @@ function App() {
     <div>
       {!hideNavbar && <Navbar />}
       <Routes>
-        {/* Public Routes */}
-        {
-          !adminContext.isLoggedIn && navigate('/login')
-        }
-        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route
           path="/about"
