@@ -30,6 +30,7 @@ const httpServer = createServer(app);
 const allowedOrigins = [
   "http://localhost:5173",
   "https://aquamarine-treacle-a13a6c.netlify.app",
+  "https://admin-furniguard.netlify.app",
   "http://localhost:5174",
   // Add your production frontend URL here later
 ];
