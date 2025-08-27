@@ -30,6 +30,7 @@ const app = express();
 const httpServer = createServer(app);
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://68ae96cba0d8f96292b37316--aquamarine-treacle-a13a6c.netlify.app/",
   "http://localhost:5174",
   // Add your production frontend URL here later
 ];
@@ -74,3 +75,5 @@ const port = process.env.PORT || 5000;
 httpServer.listen(port, () => {
   logger.info(`Server running on port ${port}`);
 });
+
+
