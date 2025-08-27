@@ -13,7 +13,6 @@ import {
   AvatarImage,
 } from "../components/components/ui/avatar";
 import { Star } from "lucide-react";
-import { Toast } from "react-toastify/dist/components";
 
 const sampleProjects = [
   {

@@ -34,7 +34,7 @@ export const AdminContexProvider = (props) => {
         { email, password },
         { withCredentials: true }
       );
-
+      
       if (response.status === 200) {
         const data = response.data;
         setIsLoggedIn(true);
@@ -44,10 +44,9 @@ export const AdminContexProvider = (props) => {
           role: data.role,
           profilePicture: data.profilePic,
         });
-        return response; // return only on success
+        return response;
       }
     } catch (error) {
-      // Rethrow error for component to handle
       if (error.response) throw error.response;
       throw error;
     }

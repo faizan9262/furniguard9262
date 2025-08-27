@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
   Eye,
   EyeOff,
@@ -9,7 +8,6 @@ import {
   Settings,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { backendUrl } from "../pages/Add";
 
 import {
   Card,
@@ -36,12 +34,10 @@ const AdminLogin = () => {
     try {
       toast.loading("Signing you in, Admin...", { id: "admin-login" });
       const response = await adminContext.adminLogin(email, password);
-
       toast.success("Login successful", { id: "admin-login" });
-      toast.log("Admin login success:", response.data);
       navigate("/");
     } catch (err) {
-      toast.error("Admin login failed:", {id: "admin-login" });
+      toast.error(err.data.message || "Admin login failed:",{id: "admin-login" });
     }
   };
 
