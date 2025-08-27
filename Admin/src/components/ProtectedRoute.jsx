@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }) => {
   const adminContext = useAdmin();
 
   if (adminContext.isLoggedIn === null) {
-    return <div>Loading...</div>;
+    return <div>Loading..</div>;
   }
 
   if (!adminContext.isLoggedIn) {
