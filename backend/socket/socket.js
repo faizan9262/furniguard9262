@@ -6,7 +6,7 @@ import logger from "../utils/logger.js";
 export const initSocket = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
-      origin: ["http://localhost:5173", "http://localhost:5174","https://68ae96cba0d8f96292b37316--aquamarine-treacle-a13a6c.netlify.app"],
+      origin: ["http://localhost:5173", "http://localhost:5174","https://aquamarine-treacle-a13a6c.netlify.app","https://admin-furniguard.netlify.app"],
       credentials: true,
     },
   });
