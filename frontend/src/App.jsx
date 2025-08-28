@@ -67,7 +67,7 @@ function App() {
             path="/"
             element={
               <Suspense fallback={<HeaderSkeleton />}>
-                <Header />
+                <Home />
               </Suspense>
             }
           />
