@@ -6,4 +6,9 @@ const socket = io("https://furniguard9262-production.up.railway.app", {
   autoConnect: true,
 })
 
+// const socket = io("http://localhost:3000", {
+//   withCredentials: true,
+//   autoConnect: true,
+// })
+
 export default socket

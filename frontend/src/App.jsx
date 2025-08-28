@@ -5,6 +5,12 @@ import { useAuth } from "./context/AuthContext.jsx";
 import Navbar from "./components/Navbar.jsx";
 import ProtectedRoute from "./components/ProtectedRoutes.jsx";
 import PublicRoute from "./components/PublicRoutes.jsx";
+import StyleSkeleton from "./components/skeletons/StyleSkelton.jsx";
+import HeaderSkeleton from "./components/skeletons/HeaderSkelleton.jsx";
+import Header from "./components/Header.jsx";
+import AppointmentsSkeleton from "./components/skeletons/ApPageSkeleton.jsx";
+import { RoomsPageSkeleton } from "./components/skeletons/RoomPageSkeleton.jsx";
+import { LayoutsPageSkeleton } from "./components/skeletons/LayoutPageSkeleton.jsx";
 
 const Home = lazy(() => import("./pages/Home.jsx"));
 const Products = lazy(() => import("./pages/Styles.jsx"));
@@ -21,7 +27,9 @@ const Appointments = lazy(() => import("./pages/Appointments.jsx"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail.jsx"));
 const PasswordUpdate = lazy(() => import("./pages/PasswordUpdate.jsx"));
 const PasswordReset = lazy(() => import("./pages/PasswordReset.jsx"));
-const AppointmentDetailPage = lazy(() => import("./pages/AppointmentDetails.jsx"));
+const AppointmentDetailPage = lazy(() =>
+  import("./pages/AppointmentDetails.jsx")
+);
 const NewAppointment = lazy(() => import("./pages/NewAppointment.jsx"));
 const ChatBox = lazy(() => import("./pages/Chatbox.jsx"));
 const Inbox = lazy(() => import("./pages/Inbox.jsx"));
@@ -54,133 +62,180 @@ function App() {
     <>
       {!hideNavbar && <Navbar />}
       <div>
-        <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/chat/:receiverId/:receiverRole"
-              element={
-                <ProtectedRoute>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Suspense fallback={<HeaderSkeleton />}>
+                <Header />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/chat/:receiverId/:receiverRole"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <ChatBox />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/inbox"
-              element={
-                <ProtectedRoute>
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/inbox"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <Inbox />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/styles" element={<Products />} />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/styles"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<StyleSkeleton />}>
+                  <Products />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/styles/:category/:id" element={<StyleDetail />} />
-            <Route path="/styles/:category" element={<Styles />} />
-            <Route path="/layout" element={<Layout />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/rooms" element={<Rooms />} />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/styles/:category/:id" element={<StyleDetail />} />
+          <Route path="/styles/:category" element={<Styles />} />
+          <Route path="/layout" element={
+            <Suspense fallback={LayoutsPageSkeleton}>
+              <Layout />
+            </Suspense>
+          } />
+          <Route path="/about" element={<About />} />
+          <Route path="/rooms" element={
+            <Suspense fallback={RoomsPageSkeleton}>
+              <Rooms />
+            </Suspense>
+          } />
 
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <Login />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/register"
-              element={
-                <PublicRoute>
+                </Suspense>
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <Register />
-                </PublicRoute>
-              }
-            />
+                </Suspense>
+              </PublicRoute>
+            }
+          />
 
-            <Route path="/designers" element={<Designers />} />
-            <Route path="/designers/:id" element={<DesignerDetail />} />
+          <Route path="/designers" element={<Designers />} />
+          <Route path="/designers/:id" element={<DesignerDetail />} />
 
-            <Route
-              path="/wishlist"
-              element={
-                <ProtectedRoute>
+          <Route
+            path="/wishlist"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <Wishlist />
-                </ProtectedRoute>
-              }
-            />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/appointments"
-              element={
-                <ProtectedRoute>
+          <Route
+            path="/appointments"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<AppointmentsSkeleton />}>
                   <Appointments />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/appointments/:id"
-              element={
-                <ProtectedRoute>
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/appointments/:id"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <AppointmentDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/new-appointment"
-              element={
-                <ProtectedRoute>
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/new-appointment"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <NewAppointment />
-                </ProtectedRoute>
-              }
-            />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/verify-email"
-              element={
-                <ProtectedRoute>
+          <Route
+            path="/verify-email"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <VerifyEmail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/update-password"
-              element={
-                <ProtectedRoute>
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/update-password"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <PasswordUpdate />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/reset-password"
-              element={
-                <ProtectedRoute>
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <PasswordReset />
-                </ProtectedRoute>
-              }
-            />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/payment-success"
-              element={
-                <ProtectedRoute>
+          <Route
+            path="/payment-success"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<p>Loading...</p>}>
                   <PaymentSuccess />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Suspense>
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
       </div>
     </>
   );
 }
-
 
 export default App;

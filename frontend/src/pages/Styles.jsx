@@ -24,8 +24,6 @@ import {
   SelectContent,
   SelectItem,
 } from "../components/components/ui/select";
-import { motion } from "framer-motion";
-import style from "react-syntax-highlighter/dist/esm/styles/hljs/a11y-dark";
 
 const Styles = () => {
   const navigate = useNavigate();
@@ -69,7 +67,7 @@ const Styles = () => {
   ];
 
   const allProducts = product.products;
-  const filteredProducts = (
+  const filteredProducts =
     allProducts?.filter((p) => {
       const matchCategory =
         !category || category === "all" || p.category === category;
@@ -79,9 +77,10 @@ const Styles = () => {
         title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCategory && matchSearch;
-    }) || []
-  );
+    }) || [];
 
+    console.log("Styels: ",filteredProducts);
+    
 
   return (
     <div className="min-h-screen px-4 sm:px-8 py-10 bg-gradient-to-br from-white via-[#fdf7f0] to-[#fff5e6]">
@@ -117,15 +116,24 @@ const Styles = () => {
         </Select>
       </div>
 
-      {/* Masonry Grid */}
-      {filteredProducts?.length > 0 ? (
+      {!allProducts ? (
+        // 🔹 Skeleton loader grid
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-48 bg-gray-200 animate-pulse rounded-lg"
+            />
+          ))}
+        </div>
+      ) : filteredProducts?.length > 0 ? (
         <Masonry
           breakpointCols={breakpointColumnsObj}
           className="flex gap-2 md:gap-4"
           columnClassName="space-y-2 md:space-y-4"
         >
-          {filteredProducts.map((product,index=1) => (
-            <div key={index} className="break-inside-avoid">
+          {filteredProducts.map((product,index) => (
+            <div key={product._id + index} className="break-inside-avoid">
               <ProductCard
                 id={product._id}
                 img_src={product.image || product.images[0]}
