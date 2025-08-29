@@ -57,15 +57,15 @@ const AppointmentCard = ({
         <img
           src={product[0]?.product?.image}
           alt={product[0]?.product?.title}
-          className="w-full h-52 object-cover rounded-xl"
+          className="w-full h-32 md:h-52 object-cover rounded-xl"
         />
         <div className="w-full flex flex-col gap-1 justify-start">
-          <h3 className="text-xl font-normal text-primary line-clamp-1">
+          <h3 className="text-sm md:text-xl font-normal text-primary line-clamp-1">
             {product[0]?.product?.name?.charAt(0).toUpperCase() +
               product[0]?.product?.name?.slice(1)}
           </h3>
           <div className="flex items-center justify-start gap-1">
-            <Badge className="text-primary bg-primary/10">
+            <Badge className="text-primary text-[8px] md:text-xs bg-primary/10">
               {product[0]?.product?.category?.charAt(0).toUpperCase() +
                 product[0]?.product?.category?.slice(1)}
             </Badge>
@@ -73,14 +73,14 @@ const AppointmentCard = ({
         </div>
       </div>
 
-      <CardContent className="flex-1 w-full flex flex-col gap-4">
+      <CardContent className="flex-1 w-full flex flex-col gap-2 md:gap-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2">
           <div className="flex w-full flex-col gap-2 justify-between">
-            <div className="flex md:flex-col gap-2 justify-start">
+            <div className="flex md:flex-col gap-2 justify-center md:justify-start">
               {/* Date Badge */}
               <div className="flex items-center justify-start gap-1">
-                <CalendarClockIcon className="w-4 h-4 text-primary" />
-                <Badge className="text-primary bg-primary/10">
+                <CalendarClockIcon className="w-3 h-3 md:h-4 md:w-4 text-primary" />
+                <Badge className="text-primary text-[8px] md:text-xs bg-primary/10">
                   {new Date(date).toLocaleDateString("en-GB")}
                 </Badge>
               </div>
@@ -90,7 +90,7 @@ const AppointmentCard = ({
                 className={`flex items-center px-1 md:p-1 justify-center rounded-full text-white ${bg}`}
               >
                 {icon}
-                <Badge className="bg-transparent text-white text-xs">
+                <Badge className="bg-transparent text-white hidden md:block">
                   {label}
                 </Badge>
               </div>
@@ -98,32 +98,32 @@ const AppointmentCard = ({
           </div>
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex justify-center md:justify-between">
           {/* User Info */}
           <div className="flex items-center gap-2">
-            <Avatar>
+            <Avatar className="w-6 h-6 md:h-8 md:w-8">
               <AvatarImage src={user?.profilePicture} />
               <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium text-primary">
+              <p className="text-[8px] md:text-sm font-medium text-primary">
                 {user?.username}
               </p>
-              <p className="text-xs text-muted-foreground">Client</p>
+              <p className="text-[8px] md:text-xs text-muted-foreground">Client</p>
             </div>
           </div>
 
           {/* Designer Info */}
           <div className="flex items-center gap-2">
-            <Avatar>
+            <Avatar className="w-6 h-6 md:h-8 md:w-8">
               <AvatarImage src={designer?.user?.profilePicture} />
               <AvatarFallback>{designer?.user?.username?.[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium text-primary">
+              <p className="text-[8px] md:text-sm font-medium text-primary">
                 {designer?.user?.username}
               </p>
-              <p className="text-sm text-muted-foreground line-clamp-1">
+              <p className="text-[8px] md:text-sm text-muted-foreground line-clamp-1">
                 {designer?.type.charAt(0).toUpperCase() + designer?.type.slice(1)}
               </p>
             </div>

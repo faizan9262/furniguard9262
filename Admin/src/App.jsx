@@ -1,26 +1,31 @@
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-
-import Appointments from "./pages/Appointments";
+import { useEffect, lazy, Suspense } from "react";
 import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Add from "./pages/Add";
-import Login from "./components/Login";
-import { useEffect } from "react";
-import "react-toastify/dist/ReactToastify.css";
-import Designers from "./pages/Designers";
-import DesignerDetails from "./pages/DesignerDetails";
-import AppointmentDetailPage from "./pages/AppointmentDetails";
-import About from "./pages/About";
-import adminSocket from "./adminSocket";
-import ChatBox from "./pages/Chatbox";
 import { useAdmin } from "./context/AdminContext";
-import AdminMessages from "./pages/AdminMessages";
-import AdminChat from "./pages/AdminChat";
-import Catalog from "./pages/Catalog";
-import StyleDetails from "./components/StyleDetails";
-import EditStyleDetails from "./pages/EditStyleDetails";
-import Payments from "./pages/Payment"; // import ProtectedRoute
 import ProtectedRoute from "./components/ProtectedRoute";
+import adminSocket from "./adminSocket";
+import HomeSkeleton from "./components/skletons/HomeSkeleton";
+import CatalogPageSkeleton from "./components/skletons/CatalogSkeleton";
+import AppointmentsPageSkeleton from "./components/skletons/ApPageSkeleton";
+import DesignersPageSkeleton from "./components/skletons/DesignersPageSkeleton";
+import PaymentsPageSkeleton from "./components/skletons/PaymentsSkeleton";
+
+// import Appointments from "";
+const Appointments = lazy(() => import("./pages/Appointments"));
+const Home = lazy(() => import("./pages/Home"));
+const Add = lazy(() => import("./pages/Add"));
+const Login = lazy(() => import("@/components/Login"));
+const Designers = lazy(() => import("./pages/Designers"));
+const DesignerDetails = lazy(() => import("./pages/DesignerDetails"));
+const About = lazy(() => import("./pages/About"));
+const AdminMessages = lazy(() => import("./pages/AdminMessages"));
+const AdminChat = lazy(() => import("./pages/AdminChat"));
+const ChatBox = lazy(() => import("./pages/Chatbox"));
+const Catalog = lazy(() => import("./pages/Catalog"));
+const StyleDetails = lazy(() => import("./components/StyleDetails"));
+const EditStyleDetails = lazy(() => import("./pages/EditStyleDetails"));
+const Payments = lazy(() => import("./pages/Payment"));
+const AppointmentDetailPage = lazy(() => import("./pages/AppointmentDetails"));
 
 function App() {
   const adminContext = useAdmin();
@@ -28,7 +33,7 @@ function App() {
   const navigate = useNavigate();
 
   const hideNavbar =
-    !adminContext.isLoggedIn && (location.pathname.startsWith("/chat/")) ||
+    (!adminContext.isLoggedIn && location.pathname.startsWith("/chat/")) ||
     location.pathname.startsWith("/chats/");
 
   // Socket connections
@@ -68,7 +73,9 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Home />
+              <Suspense fallback={<HomeSkeleton />}>
+                <Home />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -77,7 +84,9 @@ function App() {
           path="/about"
           element={
             <ProtectedRoute>
-              <About />
+              <Suspense fallback={<p>Loading...</p>}>
+                <About />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -85,7 +94,9 @@ function App() {
           path="/styles"
           element={
             <ProtectedRoute>
-              <Catalog />
+              <Suspense fallback={<CatalogPageSkeleton />}>
+                <Catalog />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -93,7 +104,9 @@ function App() {
           path="/styles/:category/:id"
           element={
             <ProtectedRoute>
-              <StyleDetails />
+              <Suspense fallback={<p>Loading</p>}>
+                <StyleDetails />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -103,7 +116,9 @@ function App() {
           path="/add"
           element={
             <ProtectedRoute>
-              <Add />
+              <Suspense fallback={<p>Loading</p>}>
+                <Add />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -111,7 +126,9 @@ function App() {
           path="/edit-style/:category/:id"
           element={
             <ProtectedRoute>
-              <EditStyleDetails />
+              <Suspense fallback={<p>Loading</p>}>
+                <EditStyleDetails />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -119,7 +136,9 @@ function App() {
           path="/appointments"
           element={
             <ProtectedRoute>
-              <Appointments />
+              <Suspense fallback={<AppointmentsPageSkeleton />}>
+                <Appointments />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -127,7 +146,9 @@ function App() {
           path="/appointments/:id"
           element={
             <ProtectedRoute>
-              <AppointmentDetailPage />
+              <Suspense fallback={<p>Loading</p>}>
+                <AppointmentDetailPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -135,7 +156,9 @@ function App() {
           path="/chat/:senderId/:receiverId"
           element={
             <ProtectedRoute>
-              <ChatBox />
+              <Suspense fallback={<p>Loading</p>}>
+                <ChatBox />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -143,7 +166,9 @@ function App() {
           path="/chats/:receiverId/:receiverRole"
           element={
             <ProtectedRoute>
-              <AdminChat />
+              <Suspense fallback={<p>Loading</p>}>
+                <AdminChat />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -151,7 +176,9 @@ function App() {
           path="/notifications"
           element={
             <ProtectedRoute>
-              <AdminMessages />
+              <Suspense fallback={<p>Loading</p>}>
+                <AdminMessages />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -159,7 +186,9 @@ function App() {
           path="/designers"
           element={
             <ProtectedRoute>
-              <Designers />
+              <Suspense fallback={<DesignersPageSkeleton />}>
+                <Designers />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -167,7 +196,9 @@ function App() {
           path="/designers/:id"
           element={
             <ProtectedRoute>
-              <DesignerDetails />
+              <Suspense fallback={<p>Loading</p>}>
+                <DesignerDetails />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -175,7 +206,9 @@ function App() {
           path="/payments"
           element={
             <ProtectedRoute>
-              <Payments />
+              <Suspense fallback={<PaymentsPageSkeleton />}>
+                <Payments />
+              </Suspense>
             </ProtectedRoute>
           }
         />

@@ -14,7 +14,7 @@ const AppointmentsSkeleton = () => {
       </div>
 
       {/* Grid of Skeleton Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <AppointmentCardSkeleton key={i} />
         ))}

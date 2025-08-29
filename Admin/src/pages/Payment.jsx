@@ -9,13 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/components/ui/select";
-import { motion } from "framer-motion";
-import { Loader2, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { toast } from "sonner";
+import PaymentsPageSkeleton from "@/components/skletons/PaymentsSkeleton";
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // ✅ restore loading
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
 
@@ -27,7 +27,7 @@ const Payments = () => {
       } catch (error) {
         toast.error("Failed fetching payments");
       } finally {
-        setLoading(false);
+        setLoading(false); // ✅ only after API finishes
       }
     };
     getAllPayments();
@@ -89,11 +89,9 @@ const Payments = () => {
         </div>
       </div>
 
-      {/* Loader */}
+      {/* ✅ prevent "No payments found" flash before loading finishes */}
       {loading ? (
-        <div className="flex justify-center items-center h-40">
-          <Loader2 className="animate-spin text-primary w-8 h-8" />
-        </div>
+        <PaymentsPageSkeleton />
       ) : filteredPayments.length === 0 ? (
         <p className="text-muted text-center">No payments found.</p>
       ) : (
@@ -117,11 +115,8 @@ const Payments = () => {
               const amount = 500 + (500 * 18) / 100; // example calc
               
               return (
-                <motion.div
+                <div
                   key={payment._id || index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: index * 0.02 }}
                   className="grid sm:grid-cols-6 gap-2 sm:gap-0 p-3 text-sm hover:bg-gray-50 transition"
                 >
                   {/* Mobile stacked view */}
@@ -166,7 +161,7 @@ const Payments = () => {
                   <p className="hidden sm:block text-right text-muted">
                     {new Date(payment.createdAt).toLocaleDateString()}
                   </p>
-                </motion.div>
+                </div>
               );
             })}
           </div>

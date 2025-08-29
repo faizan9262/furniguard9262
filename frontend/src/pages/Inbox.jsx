@@ -173,15 +173,36 @@ const Inbox = () => {
         </div>
 
         {/* Chat List */}
+        {/* Chat List */}
         <div className="space-y-4">
           {loading ? (
+            // Skeleton list
             Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-20 rounded-xl" />
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center justify-between backdrop-blur-md bg-white/60 p-4 rounded-2xl shadow-md"
+              >
+                {/* Avatar skeleton */}
+                <Skeleton className="w-12 h-12 rounded-full" />
+
+                {/* Name + message skeleton */}
+                <div className="flex-1 ml-4">
+                  <Skeleton className="h-4 w-32 mb-2 rounded" />
+                  <Skeleton className="h-3 w-48 rounded" />
+                </div>
+
+                {/* Time + unread skeleton */}
+                <div className="flex flex-col items-end gap-2">
+                  <Skeleton className="h-3 w-16 rounded" />
+                  <Skeleton className="h-3 w-12 rounded" />
+                </div>
+              </motion.div>
             ))
           ) : (
             <AnimatePresence>
               {filteredChats.length > 0 ? (
-                // Inside your filteredChats.map loop
                 filteredChats.map((chat) => {
                   const otherPerson = chat?.user || chat?.designer;
                   const isOwnMessage = chat?.sender === auth?.user?.id;
@@ -198,7 +219,7 @@ const Inbox = () => {
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                       onClick={() => updateReadStatus(otherPerson)}
-                      className={`flex items-center justify-between backdrop-blur-md bg-white/60 p-4 rounded-2xl shadow-md hover:shadow-lg hover:scale-[1.01] transition-transform cursor-pointer`}
+                      className="flex items-center justify-between backdrop-blur-md bg-white/60 p-4 rounded-2xl shadow-md hover:shadow-lg hover:scale-[1.01] transition-transform cursor-pointer"
                     >
                       <div className="flex items-center gap-4">
                         <img

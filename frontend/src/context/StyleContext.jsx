@@ -129,6 +129,8 @@ export const StyleContextProvider = (props) => {
     layout,
     livingroom,
     stairs,
+    loading,
+    hasMore,
   };
   return (
     <StyleContext.Provider value={value}>

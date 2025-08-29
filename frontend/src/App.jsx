@@ -7,10 +7,10 @@ import ProtectedRoute from "./components/ProtectedRoutes.jsx";
 import PublicRoute from "./components/PublicRoutes.jsx";
 import StyleSkeleton from "./components/skeletons/StyleSkelton.jsx";
 import HeaderSkeleton from "./components/skeletons/HeaderSkelleton.jsx";
-import Header from "./components/Header.jsx";
 import AppointmentsSkeleton from "./components/skeletons/ApPageSkeleton.jsx";
-import { RoomsPageSkeleton } from "./components/skeletons/RoomPageSkeleton.jsx";
 import { LayoutsPageSkeleton } from "./components/skeletons/LayoutPageSkeleton.jsx";
+import { WishlistPageSkeleton } from "./components/WishlistPageSkeleton.jsx";
+import ChatBoxSkeleton from "./components/skeletons/ChatboxSkeleton.jsx";
 
 const Home = lazy(() => import("./pages/Home.jsx"));
 const Products = lazy(() => import("./pages/Styles.jsx"));
@@ -75,7 +75,7 @@ function App() {
             path="/chat/:receiverId/:receiverRole"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<p>Loading...</p>}>
+                <Suspense fallback={<ChatBoxSkeleton />}>
                   <ChatBox />
                 </Suspense>
               </ProtectedRoute>
@@ -85,7 +85,7 @@ function App() {
             path="/inbox"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<p>Loading...</p>}>
+                <Suspense fallback={<Inbox />}>
                   <Inbox />
                 </Suspense>
               </ProtectedRoute>
@@ -113,17 +113,16 @@ function App() {
           />
           <Route path="/styles/:category/:id" element={<StyleDetail />} />
           <Route path="/styles/:category" element={<Styles />} />
-          <Route path="/layout" element={
-            <Suspense fallback={LayoutsPageSkeleton}>
-              <Layout />
-            </Suspense>
-          } />
+          <Route
+            path="/layout"
+            element={
+              <Suspense fallback={LayoutsPageSkeleton}>
+                <Layout />
+              </Suspense>
+            }
+          />
           <Route path="/about" element={<About />} />
-          <Route path="/rooms" element={
-            <Suspense fallback={RoomsPageSkeleton}>
-              <Rooms />
-            </Suspense>
-          } />
+          <Route path="/rooms" element={<Rooms />} />
 
           <Route
             path="/login"
@@ -153,7 +152,7 @@ function App() {
             path="/wishlist"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<p>Loading...</p>}>
+                <Suspense fallback={<WishlistPageSkeleton />}>
                   <Wishlist />
                 </Suspense>
               </ProtectedRoute>

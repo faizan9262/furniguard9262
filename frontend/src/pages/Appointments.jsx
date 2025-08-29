@@ -153,7 +153,7 @@ const Appointments = () => {
       </div>
 
       {/* Appointments Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
         <AnimatePresence>
           {filteredAppointments.length > 0 ? (
             filteredAppointments.map((item, index) => (

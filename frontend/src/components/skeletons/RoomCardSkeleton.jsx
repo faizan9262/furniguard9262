@@ -6,7 +6,7 @@ export function RoomCardSkeleton() {
   return (
     <Card className="group flex flex-col gap-3 cursor-pointer p-4 sm:p-3 rounded-3xl">
       {/* Image placeholder */}
-      <Skeleton className="w-full h-56 rounded-xl bg-primary/20" />
+      <Skeleton className="w-full h-80 rounded-xl bg-primary/20" />
 
       <CardContent className="flex flex-col gap-2 p-0">
         {/* Title */}

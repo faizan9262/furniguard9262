@@ -2,24 +2,25 @@ import React, { useEffect, useState } from "react";
 import DesignerCard from "../components/DesignerCard";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../components/components/ui/input";
-import { Label } from "../components/components/ui/label";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-} from "../components/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "../components/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDesiner } from "../context/DesignerContex";
 import { useAuth } from "../context/AuthContext";
+import { DesignerCardSkeleton } from "@/components/skeletons/DesignerPageSkeleton";
 
 const Designers = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [experienceFilter, setExperienceFilter] = useState("");
-  const auth = useAuth()
-
+  const auth = useAuth();
   const designer = useDesiner();
+
+  // Redirect if user is designer
+  useEffect(() => {
+    if (auth.user.role === "designer") {
+      navigate('/');
+    }
+  }, [auth.user.role]);
 
   const filterDesigners = designer.designers.filter((item) => {
     const matchesSearch =
@@ -27,39 +28,39 @@ const Designers = () => {
       item.type.toLowerCase().includes(searchQuery.toLowerCase());
 
     const experience = item.experience;
-
     const matchesExperience = (() => {
       switch (experienceFilter) {
-        case "2-5":
-          return experience >= 2 && experience <= 5;
-        case "5-10":
-          return experience > 5 && experience <= 10;
-        case "10-15":
-          return experience > 10 && experience <= 15;
-        case "16-20":
-          return experience > 15 && experience <= 20;
-        case "20+":
-          return experience > 20;
+        case "2-5": return experience >= 2 && experience <= 5;
+        case "5-10": return experience > 5 && experience <= 10;
+        case "10-15": return experience > 10 && experience <= 15;
+        case "16-20": return experience > 15 && experience <= 20;
+        case "20+": return experience > 20;
         case "all":
-        case "":
-          return true;
-        default:
-          return true;
+        case "": return true;
+        default: return true;
       }
     })();
 
     return matchesSearch && matchesExperience;
   });
 
-  useEffect(()=>{
-    if(auth.user.role === "designer"){
-      navigate('/')
-    }
-  },[auth.user.role])
+  const showSkeleton = designer.loading && (!designer.designers || designer.designers.length === 0);
+
+  if (showSkeleton) {
+    // Full-page skeleton grid
+    return (
+      <div className="mx-4 sm:mx-[5%] md:mx-[5%] min-h-screen my-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <DesignerCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-4 sm:mx-[5%] md:mx-[5%] min-h-screen my-5">
-
       {/* Search and Filter Controls */}
       <div className="p-4 rounded-xl flex flex-wrap gap-4 justify-center items-end">
         <Input
@@ -95,7 +96,7 @@ const Designers = () => {
           {filterDesigners.length > 0 ? (
             filterDesigners.map((item, index) => (
               <motion.div
-                key={item.id}
+                key={item._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}

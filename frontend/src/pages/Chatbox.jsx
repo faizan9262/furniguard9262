@@ -8,12 +8,14 @@ import { ArrowLeft, SendHorizontal } from "lucide-react";
 import { fetchMessages } from "../helper/api-communicator.js";
 import { Button } from "@/components/components/ui/button.jsx";
 import { toast } from "sonner";
+import ChatBoxSkeleton from "@/components/skeletons/ChatboxSkeleton.jsx";
 
 const ChatBox = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef(null);
   const navigate = useNavigate();
+  const [loading,setLoading] = useState(true)
 
   const [isTyping, setIsTyping] = useState(false);
   const [partnerTyping, setPartnerTyping] = useState(false);
@@ -62,6 +64,7 @@ const ChatBox = () => {
       try {
         const res = await fetchMessages(from, receiverId);
         setMessages(res);
+        setLoading(false)
       } catch (err) {
         toast.error("Failed to fetch conversation:", err);
       }
@@ -182,7 +185,7 @@ const ChatBox = () => {
       {/* Chat Messages Body */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth scrollbar-hide bg-primary/10 px-4 py-6">
         <div className="max-w-6xl mx-auto space-y-3">
-          {messages?.map((msg, idx) => {
+          {loading ? <ChatBoxSkeleton />: messages?.map((msg, idx) => {
             const isOwn = msg.from === from;
             const profileImage = isOwn
               ? auth?.user?.profilePic

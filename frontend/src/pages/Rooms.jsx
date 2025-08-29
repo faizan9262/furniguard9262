@@ -3,12 +3,18 @@ import RoomCard from "../components/RoomCard";
 import { useNavigate } from "react-router-dom";
 import { useStyle } from "../context/StyleContext";
 import { motion } from "framer-motion";
+import { RoomsPageSkeleton } from "@/components/skeletons/RoomPageSkeleton";
 
 const Rooms = () => {
   const navigate = useNavigate();
-  const product = useStyle();
+  const { products, loading, hasMore } = useStyle();
 
-  const rooms = product.products.filter((r) => r.category === "livingroom");
+  const rooms = products.filter((r) => r.category === "livingroom");
+
+  // Show skeleton only on first load
+  if (loading && rooms.length === 0) {
+    return <RoomsPageSkeleton />;
+  }
 
   return (
     <div className="mx-4 sm:mx-[5%] md:mx-[2%] my-10">
@@ -19,15 +25,13 @@ const Rooms = () => {
         variants={{
           hidden: {},
           show: {
-            transition: {
-              staggerChildren: 0.1,
-            },
+            transition: { staggerChildren: 0.1 },
           },
         }}
       >
-        {rooms.map((item, index) => (
+        {rooms.map((item) => (
           <motion.div
-            key={index}
+            key={item._id}
             variants={{
               hidden: { opacity: 0, y: 30 },
               show: { opacity: 1, y: 0 },

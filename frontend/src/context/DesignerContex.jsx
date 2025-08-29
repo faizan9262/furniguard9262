@@ -8,6 +8,7 @@ export const DesignerContext = createContext();
 
 export const DesignerContexProvider = (props) => {
   const [designers, setDesigners] = useState([]);
+  const [loading,setLoading] = useState(false)
   const [currentDesigner, setCurrentDesigners] = useState([]);
   const auth = useAuth();
   const userId = auth?.user?.id;
@@ -15,13 +16,14 @@ export const DesignerContexProvider = (props) => {
   // Fetch all designers from DB once
   useEffect(() => {
     const getAllDesignerFromDB = async () => {
+      setLoading(true)
       const data = await getAllDesigners();
       setDesigners(data);
+      setLoading(false)
     };
     getAllDesignerFromDB();
   }, []);
 
-  // Filter current logged-in designer
   useEffect(() => {
     if (designers.length > 0 && userId) {
       const designerProfile = designers.filter((d) => d.user?._id === userId);
@@ -35,6 +37,7 @@ export const DesignerContexProvider = (props) => {
     setDesigners,
     currentDesigner,
     setCurrentDesigners,
+    loading
   };
 
   return (
