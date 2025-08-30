@@ -3,7 +3,6 @@ import LayoutCard from "../components/LayoutCard";
 import { useNavigate } from "react-router-dom";
 import { useStyle } from "../context/StyleContext";
 import { LayoutsPageSkeleton } from "@/components/skeletons/LayoutPageSkeleton";
-// import  LayoutPageSkeleton from "../components/skeletons/LayoutPageSkeleton";
 
 const Layout = () => {
   const navigate = useNavigate();
